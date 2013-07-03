@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Floating Soft Keys</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="click_to_close">Click to close Floating Soft Keys</string>
+	<string name="enter_size">Button size (in dp)</string>
+	<string name="reload_bar">Reload bar</string>
+	<string name="transparency">Transparency</string>
+	<string name="spacing">Button spacing (in dp)</string>
+	<string name="custom_icon">Use custom icons</string>
+	<string name="available_themes">Available themes</string>
+	<string name="default_theme">Rhoadster91\'s keys (defualt)</string>
+	<string name="cancel">Cancel</string>
+	<string name="load_failed">Failed to load theme</string>
+</resources>
