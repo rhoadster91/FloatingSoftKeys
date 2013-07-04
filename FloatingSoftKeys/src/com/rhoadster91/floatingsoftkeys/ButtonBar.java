@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,7 +46,9 @@ public class ButtonBar extends StandOutWindow
 	CommandCapture menuCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_MENU);
 	CommandCapture backCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_BACK);
 	CommandCapture homeCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_HOME);
-	
+	CommandCapture powerCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_POWER);
+	CommandCapture volUpCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_VOLUME_UP);
+	CommandCapture volDownCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_VOLUME_DOWN);
 	
 	
 	@Override
@@ -220,10 +223,30 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			public boolean onLongClick(View v) 
 			{
-				Intent intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-				return true;
+				try
+				{
+					switch(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getInt("action", R.string.a_none))
+					{
+					case R.string.a_none:
+						break;
+						
+					case R.string.a_gnow:
+						Intent intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
+						break;					
+						
+					case R.string.a_lock:
+						myShell.add(powerCommand);
+						break;					
+					}					
+					return true;
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+					return true;
+				}
 			}			
 		});
 		dragButton = (ImageView)view.findViewById(R.id.imgDrag);

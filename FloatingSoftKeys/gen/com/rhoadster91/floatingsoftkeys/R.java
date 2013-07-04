@@ -34,33 +34,38 @@ public final class R {
         public static final int menu=0x7f02000a;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f070000;
-        public static final int body=0x7f070019;
-        public static final int buttonBack=0x7f070009;
-        public static final int buttonHome=0x7f07000b;
-        public static final int buttonMenu=0x7f07000d;
-        public static final int buttonReload=0x7f070008;
-        public static final int checkBox1=0x7f070007;
-        public static final int close=0x7f070018;
-        public static final int content=0x7f070012;
-        public static final int corner=0x7f07001a;
-        public static final int description=0x7f070011;
+        public static final int ScrollView1=0x7f070000;
+        public static final int body=0x7f07001e;
+        public static final int button1=0x7f070007;
+        public static final int buttonBack=0x7f07000e;
+        public static final int buttonHome=0x7f070010;
+        public static final int buttonMenu=0x7f070012;
+        public static final int buttonReload=0x7f07000d;
+        public static final int checkBox1=0x7f07000a;
+        public static final int checkBox2=0x7f07000c;
+        public static final int close=0x7f07001d;
+        public static final int content=0x7f070017;
+        public static final int corner=0x7f07001f;
+        public static final int description=0x7f070016;
         public static final int editText1=0x7f070002;
-        public static final int editText2=0x7f070006;
-        public static final int hide=0x7f070016;
-        public static final int icon=0x7f070010;
-        public static final int imgDrag=0x7f07000f;
-        public static final int maximize=0x7f070017;
+        public static final int editText2=0x7f070009;
+        public static final int hide=0x7f07001b;
+        public static final int icon=0x7f070015;
+        public static final int imgDrag=0x7f070014;
+        public static final int maximize=0x7f07001c;
         public static final int seekBar1=0x7f070004;
-        public static final int space1=0x7f07000a;
-        public static final int space2=0x7f07000c;
-        public static final int space3=0x7f07000e;
+        public static final int space1=0x7f07000f;
+        public static final int space2=0x7f070011;
+        public static final int space3=0x7f070013;
         public static final int textView1=0x7f070001;
         public static final int textView2=0x7f070003;
-        public static final int textView3=0x7f070005;
-        public static final int title=0x7f070015;
-        public static final int titlebar=0x7f070013;
-        public static final int window_icon=0x7f070014;
+        public static final int textView3=0x7f070008;
+        public static final int textView4=0x7f070005;
+        public static final int textView5=0x7f070006;
+        public static final int textView6=0x7f07000b;
+        public static final int title=0x7f07001a;
+        public static final int titlebar=0x7f070018;
+        public static final int window_icon=0x7f070019;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -69,22 +74,31 @@ public final class R {
         public static final int system_window_decorators=0x7f030003;
     }
     public static final class string {
+        public static final int a_gnow=0x7f040019;
+        public static final int a_lock=0x7f04001a;
+        public static final int a_none=0x7f040018;
+        public static final int a_supported=0x7f040017;
         public static final int action_settings=0x7f040006;
         public static final int app_name=0x7f040005;
-        public static final int available_themes=0x7f04000e;
-        public static final int cancel=0x7f040010;
+        public static final int available_themes=0x7f04000f;
+        public static final int cancel=0x7f040011;
+        public static final int change=0x7f040016;
         public static final int click_to_close=0x7f040008;
         public static final int close=0x7f040002;
         public static final int corner=0x7f040003;
         public static final int custom_icon=0x7f04000d;
-        public static final int default_theme=0x7f04000f;
+        public static final int custom_icon_tip=0x7f04000e;
+        public static final int default_theme=0x7f040010;
+        public static final int done=0x7f040012;
         public static final int enter_size=0x7f040009;
         public static final int hello_world=0x7f040007;
         public static final int hide=0x7f040001;
-        public static final int load_failed=0x7f040011;
+        public static final int home_long_press=0x7f040015;
+        public static final int load_failed=0x7f040013;
         public static final int maximize=0x7f040004;
         public static final int reload_bar=0x7f04000a;
         public static final int spacing=0x7f04000c;
+        public static final int start_boot=0x7f040014;
         public static final int transparency=0x7f04000b;
         public static final int window_icon=0x7f040000;
     }

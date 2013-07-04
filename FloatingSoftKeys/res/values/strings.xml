@@ -10,8 +10,17 @@
 	<string name="transparency">Transparency</string>
 	<string name="spacing">Button spacing (in dp)</string>
 	<string name="custom_icon">Use custom icons</string>
+	<string name="custom_icon_tip">TIP: To get more custom icon themes or to find out how to create one yourself, click here.</string>
 	<string name="available_themes">Available themes</string>
-	<string name="default_theme">Rhoadster91\'s keys (defualt)</string>
+	<string name="default_theme">Rhoadster91\'s keys (default)</string>
 	<string name="cancel">Cancel</string>
+	<string name="done">Done</string>
 	<string name="load_failed">Failed to load theme</string>
+	<string name="start_boot">Start at boot</string>
+	<string name="home_long_press">Home long press action</string>
+	<string name="change">Change</string>
+	<string name="a_supported">Supported actions</string>
+	<string name="a_none">(none)</string>
+	<string name="a_gnow">Launch Google Now</string>
+	<string name="a_lock">Power button</string>	
 </resources>

@@ -2,10 +2,16 @@ package com.rhoadster91.floatingsoftkeys;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeoutException;
+
+import com.stericson.RootTools.RootTools;
+import com.stericson.RootTools.exceptions.RootDeniedException;
 
 import wei.mark.standout.StandOutWindow;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +31,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 
@@ -47,9 +54,130 @@ public class MainActivity extends Activity
     	((EditText)findViewById(R.id.editText2)).setText("" + FloatingSoftKeysApplication.spacing);
     	FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();
     	final Context context = this;  		
-		StandOutWindow.show(this, ButtonBar.class, StandOutWindow.DEFAULT_ID);
-		((TextView)findViewById(R.id.textView2)).setText(getString(R.string.transparency) + ": " + FloatingSoftKeysApplication.transparency);
+    	TextView tvTip = (TextView)findViewById(R.id.textView6);
+    	tvTip.setOnClickListener(new OnClickListener()
+    	{
+			@Override
+			public void onClick(View v) 
+			{
+				String url = "http://forum.xda-developers.com/showthread.php?p=43214543#post43214543";
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(url));
+				startActivity(i);
+			}    		
+    	});
+    			
+    	new AsyncTask<Void, Void, Void>()
+		{
+
+			@Override
+			protected Void doInBackground(Void... params) 
+			{
+				try 
+				{
+					while(RootTools.getShell(true)==null)
+						Thread.sleep(100);;
+				}
+				catch (InterruptedException e) 
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TimeoutException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (RootDeniedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) 
+			{
+				StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);
+				super.onPostExecute(result);
+			}					
+			
+		}.execute();((TextView)findViewById(R.id.textView2)).setText(getString(R.string.transparency) + ": " + FloatingSoftKeysApplication.transparency);
 		final CheckBox checkCustomIcons = (CheckBox)findViewById(R.id.checkBox1);
+		CheckBox checkOnBootStart = (CheckBox)findViewById(R.id.checkBox2);
+		checkOnBootStart.setChecked(sharedPref.getBoolean("startonboot", false));
+		checkOnBootStart.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("startonboot", isChecked).commit();				
+			}
+			
+		});
+		final TextView tvAction = (TextView)findViewById(R.id.textView5);
+		try
+		{
+			tvAction.setText(getString(sharedPref.getInt("action", R.string.a_none)));
+		}
+		catch(Exception e)
+		{
+			tvAction.setText(getString(R.string.a_none));
+			PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt("action", R.string.a_none).commit();
+		}
+		Button changeAction = (Button)findViewById(R.id.button1);
+		changeAction.setOnClickListener(new OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+		    	builder.setTitle(getString(R.string.a_supported));
+		    	final ArrayList<String>actionList = new ArrayList<String>();
+		    	actionList.add(getString(R.string.a_none));
+		    	actionList.add(getString(R.string.a_gnow));
+		    	actionList.add(getString(R.string.a_lock));
+		    	int x = sharedPref.getInt("action", 0);
+		    	if(x==R.string.a_none)
+		    		x = 0;
+		    	else if(x==R.string.a_gnow)
+		    		x = 1;
+		    	else if(x==R.string.a_lock)
+		    		x = 2;
+		    	else
+		    		x = 0;
+		    	String []list = new String[actionList.size()];
+		    	actionList.toArray(list);
+		    	builder.setSingleChoiceItems(list, x, new DialogInterface.OnClickListener()
+		    	{
+					@Override
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						SharedPreferences.Editor editor = sharedPref.edit();
+						if(actionList.get(which).contentEquals(getString(R.string.a_none)))															
+							editor.putInt("action", R.string.a_none);
+						else if(actionList.get(which).contentEquals(getString(R.string.a_gnow)))															
+							editor.putInt("action", R.string.a_gnow);
+						else if(actionList.get(which).contentEquals(getString(R.string.a_lock)))															
+							editor.putInt("action", R.string.a_lock);
+						editor.commit();
+						tvAction.setText(actionList.get(which));
+						dialog.dismiss();
+					}    		
+		    	});
+		    	builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() 
+		    	{
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) 
+					{							
+						
+					}
+				});
+		    	builder.show();
+			}			
+		});
 		if(sharedPref.getInt("theme", 0)==0)
 			checkCustomIcons.setChecked(false);
 		else

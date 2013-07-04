@@ -16,17 +16,17 @@ public final class R {
 		public static final int maximize = 0x7f020009;
 	}
 	public static final class id {
-		public static final int body = 0x7f070019;
-		public static final int close = 0x7f070018;
-		public static final int content = 0x7f070012;
-		public static final int corner = 0x7f07001a;
-		public static final int description = 0x7f070011;
-		public static final int hide = 0x7f070016;
-		public static final int icon = 0x7f070010;
-		public static final int maximize = 0x7f070017;
-		public static final int title = 0x7f070015;
-		public static final int titlebar = 0x7f070013;
-		public static final int window_icon = 0x7f070014;
+		public static final int body = 0x7f07001e;
+		public static final int close = 0x7f07001d;
+		public static final int content = 0x7f070017;
+		public static final int corner = 0x7f07001f;
+		public static final int description = 0x7f070016;
+		public static final int hide = 0x7f07001b;
+		public static final int icon = 0x7f070015;
+		public static final int maximize = 0x7f07001c;
+		public static final int title = 0x7f07001a;
+		public static final int titlebar = 0x7f070018;
+		public static final int window_icon = 0x7f070019;
 	}
 	public static final class layout {
 		public static final int drop_down_list_item = 0x7f030002;
