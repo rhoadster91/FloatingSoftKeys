@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
@@ -43,17 +44,18 @@ public class ButtonBar extends StandOutWindow
 	static Button homeButton = null;
 	static Button menuButton = null;
 	static ImageView dragButton = null;
+	static int windowHeight;
+	static int windowWidth;
 	CommandCapture menuCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_MENU);
 	CommandCapture backCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_BACK);
 	CommandCapture homeCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_HOME);
 	CommandCapture powerCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_POWER);
 	CommandCapture volUpCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_VOLUME_UP);
 	CommandCapture volDownCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_VOLUME_DOWN);
-	
-	
+			
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
-	{
+	{		
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
@@ -67,14 +69,17 @@ public class ButtonBar extends StandOutWindow
 	@Override
 	public int getAppIcon()
 	{
-		return android.R.drawable.ic_menu_close_clear_cancel;
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("shownotif", true))			
+			return android.R.drawable.ic_menu_close_clear_cancel;
+		else			
+			return R.drawable.nothing;			
 	}
 
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void createAndAttachView(int id, FrameLayout frame)
-	{	
+	{			
 		thisId = id;
 		final int idx = id;
 		try 
@@ -96,10 +101,26 @@ public class ButtonBar extends StandOutWindow
 		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();    	
 		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.buttons, frame, true);
+		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("horizontal", true))
+		{
+			windowHeight = FloatingSoftKeysApplication.getSizeInPix();
+			windowWidth = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
+			LinearLayout buttonLayout = (LinearLayout)view.findViewById(R.id.buttonLayout);
+			buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
+			
+		}
+		else
+		{
+			windowWidth = FloatingSoftKeysApplication.getSizeInPix();
+			windowHeight = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
+			LinearLayout buttonLayout = (LinearLayout)view.findViewById(R.id.buttonLayout);
+			buttonLayout.setOrientation(LinearLayout.VERTICAL);
+		}
 		View sp1 = (View)view.findViewById(R.id.space1);
 		View sp2 = (View)view.findViewById(R.id.space2);
 		View sp3 = (View)view.findViewById(R.id.space3);LinearLayout.LayoutParams space = new LinearLayout.LayoutParams(
-        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		
+		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         space.height = 0;
         space.width = FloatingSoftKeysApplication.getSpacingInPix();
 		sp1.setLayoutParams(space);
@@ -121,15 +142,17 @@ public class ButtonBar extends StandOutWindow
 			public void onClick(View v) 
 			{				
 				try 
-				{
-					
+				{					
 					myShell.add(backCommand);						
 				} 
 				catch (IOException e) 
 				{
 					e.printStackTrace();
+				}		
+				catch(NullPointerException npe)
+				{
+					Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
 				}				
-				
 			}
 		});
 		backButton.setOnLongClickListener(new OnLongClickListener()
@@ -137,7 +160,10 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			public boolean onLongClick(View v) 
 			{
-				collapseToLeft(idx);
+				if(windowHeight < windowWidth)
+					collapseToLeft(idx);
+				else
+					stickToLeft(idx);
 				return true;
 			}			
 		});
@@ -155,7 +181,11 @@ public class ButtonBar extends StandOutWindow
 				catch (IOException e) 
 				{
 					e.printStackTrace();
-				}					
+				}
+				catch(NullPointerException npe)
+				{
+					Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 		menuButton.setOnLongClickListener(new OnLongClickListener()
@@ -215,7 +245,11 @@ public class ButtonBar extends StandOutWindow
 				catch (IOException e) 
 				{
 					e.printStackTrace();
-				}										
+				}		
+				catch(NullPointerException npe)
+				{
+					Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 		homeButton.setOnLongClickListener(new OnLongClickListener()
@@ -237,11 +271,18 @@ public class ButtonBar extends StandOutWindow
 						break;					
 						
 					case R.string.a_lock:
-						myShell.add(powerCommand);
+						try
+						{
+							myShell.add(powerCommand);
+						}
+						catch(NullPointerException npe)
+						{
+							Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
+						}
 						break;					
 					}					
 					return true;
-				}
+				}				
 				catch(Exception e)
 				{
 					e.printStackTrace();
@@ -266,7 +307,10 @@ public class ButtonBar extends StandOutWindow
 		backDrawable.setAlpha(255 - ((255 * FloatingSoftKeysApplication.transparency) / 100));
 		menuDrawable.setAlpha(255 - ((255 * FloatingSoftKeysApplication.transparency) / 100));
 		homeDrawable.setAlpha(255 - ((255 * FloatingSoftKeysApplication.transparency) / 100));
-		dragDrawable.setAlpha(255 - ((255 * FloatingSoftKeysApplication.transparency) / 100));
+		if(!PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("hidedrag", false))
+			dragDrawable.setAlpha(255 - ((255 * FloatingSoftKeysApplication.transparency) / 100));
+		else
+			dragDrawable.setAlpha(0);
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion < android.os.Build.VERSION_CODES.JELLY_BEAN)
         {
@@ -289,7 +333,18 @@ public class ButtonBar extends StandOutWindow
 	@Override
 	public StandOutLayoutParams getParams(int id, Window window) 
 	{
-		return new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix() + 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(),
+		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("horizontal", true))
+		{
+			windowHeight = FloatingSoftKeysApplication.getSizeInPix();
+			windowWidth = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
+			
+		}
+		else
+		{
+			windowWidth = FloatingSoftKeysApplication.getSizeInPix();
+			windowHeight = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
+		}
+		return new StandOutLayoutParams(id, windowWidth, windowHeight,
 				StandOutLayoutParams.CENTER, StandOutLayoutParams.CENTER);		
 	}
 
@@ -439,6 +494,40 @@ public class ButtonBar extends StandOutWindow
 						}
 		        		
 		        	});
+		        }
+		    }
+		});
+		
+				
+	}
+	
+	private void stickToLeft(final int id)
+	{			
+		updateWindowLocation(id);
+		final long duration = 600;
+		final Handler handler = new Handler();
+		final long start = SystemClock.uptimeMillis();		
+		final Interpolator interpolator = new DecelerateInterpolator((float) 1.8);		
+		final int dx = 0;
+		final int sx = currentLeft;
+		final int sy = currentTop - (FloatingSoftKeysApplication.getSizeInPix() / 2);
+		handler.post(new Runnable() 
+		{
+		    public void run() 
+		    {
+		        long elapsed = SystemClock.uptimeMillis() - start;
+		        float t = interpolator.getInterpolation((float) elapsed / duration);
+		        double x = t * dx + (1 - t) * sx;
+		        updateViewLayout(id, new StandOutLayoutParams(id, windowWidth, windowHeight, (int) x, sy));
+		        createSpringEffect();
+		        if (t < 1.0)
+		        {
+		            // Post again 10ms later.
+		            handler.postDelayed(this, 5);
+		        }	
+		        else
+		        {
+		        	updateViewLayout(id, new StandOutLayoutParams(id, windowWidth, windowHeight, 0, sy));		        	
 		        }
 		    }
 		});

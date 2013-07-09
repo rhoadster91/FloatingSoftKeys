@@ -116,6 +116,61 @@ public class MainActivity extends Activity
 			}
 			
 		});
+		final CheckBox checkShowNotif = (CheckBox)findViewById(R.id.checkBox4);
+		checkShowNotif.setChecked(sharedPref.getBoolean("shownotif", true));
+		checkShowNotif.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				int currentapiVersion = android.os.Build.VERSION.SDK_INT;				
+				if(currentapiVersion>=16 && !isChecked)
+				{
+					new AlertDialog.Builder(MainActivity.this).setTitle(getString(R.string.hide_title)).setMessage(getString(R.string.hide_text)).setPositiveButton(getString(R.string.gotoappinfo), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int which) 
+						{
+							checkShowNotif.setChecked(true);
+							showAppInfo("com.rhoadster91.floatingsoftkeys");
+						}
+					}).setNegativeButton(getString(R.string.putnothingicon), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int which) 
+						{
+							
+						}
+					}) .show();
+				}
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("shownotif", isChecked).commit();
+				
+			}
+			
+		});
+		CheckBox checkHorizOrientation = (CheckBox)findViewById(R.id.checkBox3);
+		checkHorizOrientation.setChecked(sharedPref.getBoolean("horizontal", true));
+		checkHorizOrientation.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("horizontal", isChecked).commit();				
+			}
+			
+		});
+		CheckBox checkInvisibleDrag = (CheckBox)findViewById(R.id.checkBox5);
+		checkInvisibleDrag.setChecked(sharedPref.getBoolean("hidedrag", false));
+		checkInvisibleDrag.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("hidedrag", isChecked).commit();				
+			}
+			
+		});
 		final TextView tvAction = (TextView)findViewById(R.id.textView5);
 		try
 		{
@@ -370,4 +425,13 @@ public class MainActivity extends Activity
 			checkCustomIcons.setChecked(false);			
 		}
     }
+    
+    public void showAppInfo(String packageName) 
+    {
+		Intent intent = new Intent();
+		intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+		Uri uri = Uri.fromParts("package", packageName, null);
+		intent.setData(uri);
+		startActivity(intent);
+	}
 }

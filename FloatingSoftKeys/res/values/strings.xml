@@ -23,4 +23,12 @@
 	<string name="a_none">(none)</string>
 	<string name="a_gnow">Launch Google Now</string>
 	<string name="a_lock">Power button</string>	
+	<string name="not_root">Could not acquire root permissions. Please reload the bar and give root permissions.</string>
+	<string name="show_notif">Show persistent notification</string>
+	<string name="horizontal_orientation">Horizontal Orientation</string>
+	<string name="invisible_drag">Invisible drag icon</string>
+	<string name="hide_title">Hide persistent notification</string>
+	<string name="hide_text">Jelly Bean detected on your phone. If you check this, it will put a transparent notification icon in the tray. But for Jelly Bean users, there is an option to hide notifications from App Info in settings. What would you like to do?</string>
+	<string name="gotoappinfo">Go to App Info</string>
+	<string name="putnothingicon">Use transparent icon</string>
 </resources>
