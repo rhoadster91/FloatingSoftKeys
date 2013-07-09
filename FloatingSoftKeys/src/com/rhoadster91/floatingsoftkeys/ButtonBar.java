@@ -121,7 +121,7 @@ public class ButtonBar extends StandOutWindow
 		View sp3 = (View)view.findViewById(R.id.space3);LinearLayout.LayoutParams space = new LinearLayout.LayoutParams(
 		
 		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        space.height = 0;
+        space.height = FloatingSoftKeysApplication.getSpacingInPix();
         space.width = FloatingSoftKeysApplication.getSpacingInPix();
 		sp1.setLayoutParams(space);
 		sp2.setLayoutParams(space);
