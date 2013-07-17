@@ -1,14 +1,9 @@
 package com.rhoadster91.floatingsoftkeys;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.TimeoutException;
-
-import com.stericson.RootTools.RootTools;
-import com.stericson.RootTools.exceptions.RootDeniedException;
-import com.stericson.RootTools.execution.CommandCapture;
-import com.stericson.RootTools.execution.Shell;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -30,14 +25,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
 
 public class ButtonBar extends StandOutWindow
 {
-	static Shell myShell = null;
 	int currentLeft, currentTop;
 	int thisId;
 	static Button backButton = null;
@@ -46,13 +39,14 @@ public class ButtonBar extends StandOutWindow
 	static ImageView dragButton = null;
 	static int windowHeight;
 	static int windowWidth;
-	CommandCapture menuCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_MENU);
-	CommandCapture backCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_BACK);
-	CommandCapture homeCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_HOME);
-	CommandCapture powerCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_POWER);
-	CommandCapture volUpCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_VOLUME_UP);
-	CommandCapture volDownCommand = new CommandCapture(0, "input keyevent " + KeyEvent.KEYCODE_VOLUME_DOWN);
-			
+	static DataOutputStream dos;
+	static Process backProcess = null;
+	static Process homeProcess = null;
+	static Process powerProcess = null;
+	static Process menuProcess = null;
+	static final String exportClasspath = "export CLASSPATH=/system/framework/input.jar";
+	static final String app_process_launch = "app_process /system/bin/ com.android.commands.input.Input keyevent ";
+		
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{		
@@ -81,23 +75,7 @@ public class ButtonBar extends StandOutWindow
 	public void createAndAttachView(int id, FrameLayout frame)
 	{			
 		thisId = id;
-		final int idx = id;
-		try 
-		{
-			myShell = RootTools.getShell(true);
-		} 
-		catch (IOException e1)
-		{
-			e1.printStackTrace();
-		} 
-		catch (TimeoutException e1) 
-		{
-			e1.printStackTrace();
-		} 
-		catch (RootDeniedException e1)
-		{
-			e1.printStackTrace();
-		}
+		final int idx = id;		
 		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();    	
 		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.buttons, frame, true);
@@ -134,25 +112,22 @@ public class ButtonBar extends StandOutWindow
         LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         rel_btn.height = FloatingSoftKeysApplication.getSizeInPix();
         rel_btn.width = FloatingSoftKeysApplication.getSizeInPix();
-		backButton.setLayoutParams(rel_btn);	
-		backButton.setOnClickListener(new OnClickListener()
+		backButton.setLayoutParams(rel_btn);		
+		backButton.setOnClickListener(new OnClickListener()		
 		{
 
 			@Override
 			public void onClick(View v) 
 			{				
-				try 
-				{					
-					myShell.add(backCommand);						
+				try
+				{
+					runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_BACK, 1);
 				} 
 				catch (IOException e) 
 				{
+					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}		
-				catch(NullPointerException npe)
-				{
-					Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
-				}				
+				}									
 			}
 		});
 		backButton.setOnLongClickListener(new OnLongClickListener()
@@ -176,16 +151,12 @@ public class ButtonBar extends StandOutWindow
 			{				
 				try 
 				{
-					myShell.add(menuCommand);
-				} 
+					runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_MENU, 4);
+				}
 				catch (IOException e) 
 				{
 					e.printStackTrace();
-				}
-				catch(NullPointerException npe)
-				{
-					Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
-				}
+				}					
 			}
 		});
 		menuButton.setOnLongClickListener(new OnLongClickListener()
@@ -240,16 +211,12 @@ public class ButtonBar extends StandOutWindow
 			{				
 				try 
 				{
-					myShell.add(homeCommand);
-				} 
-				catch (IOException e) 
+					runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_HOME, 2);
+				}
+				catch (IOException e)
 				{
 					e.printStackTrace();
-				}		
-				catch(NullPointerException npe)
-				{
-					Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
-				}
+				}			
 			}
 		});
 		homeButton.setOnLongClickListener(new OnLongClickListener()
@@ -271,14 +238,7 @@ public class ButtonBar extends StandOutWindow
 						break;					
 						
 					case R.string.a_lock:
-						try
-						{
-							myShell.add(powerCommand);
-						}
-						catch(NullPointerException npe)
-						{
-							Toast.makeText(getApplicationContext(), getString(R.string.not_root), Toast.LENGTH_LONG).show();
-						}
+						runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_POWER, 3);						
 						break;					
 					}					
 					return true;
@@ -530,10 +490,39 @@ public class ButtonBar extends StandOutWindow
 		        	updateViewLayout(id, new StandOutLayoutParams(id, windowWidth, windowHeight, 0, sy));		        	
 		        }
 		    }
-		});
-		
-				
+		});				
 	}
 	
-	
+	private void runCommandAsRoot(String command, int which) throws IOException
+	{
+		switch(which)
+		{
+		case 1:
+			if(backProcess==null)			
+				backProcess = Runtime.getRuntime().exec("su");			
+			dos = new DataOutputStream(backProcess.getOutputStream());
+			break;
+			
+		case 2:
+			if(homeProcess==null)
+				homeProcess = Runtime.getRuntime().exec("su");			
+			dos = new DataOutputStream(homeProcess.getOutputStream());
+			break;
+			
+		case 3:
+			if(powerProcess==null)
+				powerProcess = Runtime.getRuntime().exec("su");			
+			dos = new DataOutputStream(powerProcess.getOutputStream());			
+			break;
+		case 4:
+			if(menuProcess==null)
+				menuProcess = Runtime.getRuntime().exec("su");
+			dos = new DataOutputStream(menuProcess.getOutputStream());			
+			break;
+		}		
+		dos.writeBytes(exportClasspath + "\n");
+		dos.flush();
+		dos.writeBytes(command + "\n");
+		dos.flush();		
+	}
 }

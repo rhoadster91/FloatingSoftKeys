@@ -1,11 +1,5 @@
 package com.rhoadster91.floatingsoftkeys;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
-
-import com.stericson.RootTools.RootTools;
-import com.stericson.RootTools.exceptions.RootDeniedException;
-
 import wei.mark.standout.StandOutWindow;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,30 +18,15 @@ public class OnBootStartKeysReceiver extends BroadcastReceiver
 	{
 		if(PreferenceManager.getDefaultSharedPreferences(arg0).getBoolean("startonboot", false))
 		{
-			try 
-			{
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(arg0);
 				FloatingSoftKeysApplication.size = sharedPref.getInt("size", 32);
 				FloatingSoftKeysApplication.spacing  = sharedPref.getInt("spacing", 0);;
 				FloatingSoftKeysApplication.transparency  = sharedPref.getInt("transparency", 0);
 				FloatingSoftKeysApplication.displayMetrics = arg0.getResources().getDisplayMetrics();
 				loadTheme(sharedPref.getString("themename", arg0.getString(R.string.default_theme)), arg0);
-				while(RootTools.getShell(true)==null)
-					Thread.sleep(100);
+				
 				StandOutWindow.show(arg0, ButtonBar.class, StandOutWindow.DEFAULT_ID);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TimeoutException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RootDeniedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 		}
 	}
 	

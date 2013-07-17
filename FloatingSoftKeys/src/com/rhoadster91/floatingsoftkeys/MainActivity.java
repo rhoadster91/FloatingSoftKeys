@@ -2,14 +2,8 @@ package com.rhoadster91.floatingsoftkeys;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeoutException;
-
-import com.stericson.RootTools.RootTools;
-import com.stericson.RootTools.exceptions.RootDeniedException;
-
 import wei.mark.standout.StandOutWindow;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -65,44 +59,10 @@ public class MainActivity extends Activity
 				i.setData(Uri.parse(url));
 				startActivity(i);
 			}    		
-    	});
-    			
-    	new AsyncTask<Void, Void, Void>()
-		{
-
-			@Override
-			protected Void doInBackground(Void... params) 
-			{
-				try 
-				{
-					while(RootTools.getShell(true)==null)
-						Thread.sleep(100);;
-				}
-				catch (InterruptedException e) 
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TimeoutException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (RootDeniedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) 
-			{
-				StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);
-				super.onPostExecute(result);
-			}					
-			
-		}.execute();((TextView)findViewById(R.id.textView2)).setText(getString(R.string.transparency) + ": " + FloatingSoftKeysApplication.transparency);
+    	});    			
+    	
+		StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);			
+		((TextView)findViewById(R.id.textView2)).setText(getString(R.string.transparency) + ": " + FloatingSoftKeysApplication.transparency);
 		final CheckBox checkCustomIcons = (CheckBox)findViewById(R.id.checkBox1);
 		CheckBox checkOnBootStart = (CheckBox)findViewById(R.id.checkBox2);
 		checkOnBootStart.setChecked(sharedPref.getBoolean("startonboot", false));
