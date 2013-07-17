@@ -1,0 +1,7 @@
+Version 2.0.0
+- Significantly improved responsiveness (reduced lag)
+- Removed unnecessary code
+- Added changelog display (duh)
+- Fixed orientation bug (reduced the unpredictability)
+- Vibrate option
+- New in-app option to turn off softkeys (useful if you have hidden notifications)

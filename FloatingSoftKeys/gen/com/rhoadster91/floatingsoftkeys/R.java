@@ -36,41 +36,43 @@ public final class R {
     }
     public static final class id {
         public static final int ScrollView1=0x7f070000;
-        public static final int body=0x7f070022;
+        public static final int body=0x7f070024;
         public static final int button1=0x7f070007;
-        public static final int buttonBack=0x7f070012;
-        public static final int buttonHome=0x7f070014;
-        public static final int buttonLayout=0x7f070011;
-        public static final int buttonMenu=0x7f070016;
-        public static final int buttonReload=0x7f070010;
+        public static final int button2=0x7f070012;
+        public static final int buttonBack=0x7f070014;
+        public static final int buttonHome=0x7f070016;
+        public static final int buttonLayout=0x7f070013;
+        public static final int buttonMenu=0x7f070018;
+        public static final int buttonReload=0x7f070011;
         public static final int checkBox1=0x7f07000a;
         public static final int checkBox2=0x7f07000f;
         public static final int checkBox3=0x7f07000c;
         public static final int checkBox4=0x7f07000e;
         public static final int checkBox5=0x7f07000d;
-        public static final int close=0x7f070021;
-        public static final int content=0x7f07001b;
-        public static final int corner=0x7f070023;
-        public static final int description=0x7f07001a;
+        public static final int checkBox6=0x7f070010;
+        public static final int close=0x7f070023;
+        public static final int content=0x7f07001d;
+        public static final int corner=0x7f070025;
+        public static final int description=0x7f07001c;
         public static final int editText1=0x7f070002;
         public static final int editText2=0x7f070009;
-        public static final int hide=0x7f07001f;
-        public static final int icon=0x7f070019;
-        public static final int imgDrag=0x7f070018;
-        public static final int maximize=0x7f070020;
+        public static final int hide=0x7f070021;
+        public static final int icon=0x7f07001b;
+        public static final int imgDrag=0x7f07001a;
+        public static final int maximize=0x7f070022;
         public static final int seekBar1=0x7f070004;
-        public static final int space1=0x7f070013;
-        public static final int space2=0x7f070015;
-        public static final int space3=0x7f070017;
+        public static final int space1=0x7f070015;
+        public static final int space2=0x7f070017;
+        public static final int space3=0x7f070019;
         public static final int textView1=0x7f070001;
         public static final int textView2=0x7f070003;
         public static final int textView3=0x7f070008;
         public static final int textView4=0x7f070005;
         public static final int textView5=0x7f070006;
         public static final int textView6=0x7f07000b;
-        public static final int title=0x7f07001e;
-        public static final int titlebar=0x7f07001c;
-        public static final int window_icon=0x7f07001d;
+        public static final int title=0x7f070020;
+        public static final int titlebar=0x7f07001e;
+        public static final int window_icon=0x7f07001f;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -88,8 +90,10 @@ public final class R {
         public static final int available_themes=0x7f04000f;
         public static final int cancel=0x7f040011;
         public static final int change=0x7f040016;
+        public static final int changelog=0x7f040023;
         public static final int click_to_close=0x7f040008;
         public static final int close=0x7f040002;
+        public static final int cool=0x7f040024;
         public static final int corner=0x7f040003;
         public static final int custom_icon=0x7f04000d;
         public static final int custom_icon_tip=0x7f04000e;
@@ -113,6 +117,7 @@ public final class R {
         public static final int spacing=0x7f04000c;
         public static final int start_boot=0x7f040014;
         public static final int transparency=0x7f04000b;
+        public static final int vibrate=0x7f040025;
         public static final int window_icon=0x7f040000;
     }
     public static final class style {

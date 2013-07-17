@@ -1,20 +1,25 @@
 package com.rhoadster91.floatingsoftkeys;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -29,6 +34,7 @@ import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class ButtonBar extends StandOutWindow
 {
 	int currentLeft, currentTop;
@@ -39,14 +45,9 @@ public class ButtonBar extends StandOutWindow
 	static ImageView dragButton = null;
 	static int windowHeight;
 	static int windowWidth;
-	static DataOutputStream dos;
-	static Process backProcess = null;
-	static Process homeProcess = null;
-	static Process powerProcess = null;
-	static Process menuProcess = null;
-	static final String exportClasspath = "export CLASSPATH=/system/framework/input.jar";
-	static final String app_process_launch = "app_process /system/bin/ com.android.commands.input.Input keyevent ";
-		
+	static EventHandler myEventHandler;
+	static int olddim1, olddim2;
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{		
@@ -76,7 +77,9 @@ public class ButtonBar extends StandOutWindow
 	{			
 		thisId = id;
 		final int idx = id;		
-		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();    	
+		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics(); 
+		olddim1 = FloatingSoftKeysApplication.displayMetrics.heightPixels;
+		olddim2 = FloatingSoftKeysApplication.displayMetrics.heightPixels;
 		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.buttons, frame, true);
 		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("horizontal", true))
@@ -118,16 +121,12 @@ public class ButtonBar extends StandOutWindow
 
 			@Override
 			public void onClick(View v) 
-			{				
-				try
-				{
-					runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_BACK, 1);
-				} 
-				catch (IOException e) 
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}									
+			{		
+				if(myEventHandler==null)
+					myEventHandler = new EventHandler(getApplicationContext());
+				myEventHandler.sendKeys(KeyEvent.KEYCODE_BACK);
+				vibrate();
+								
 			}
 		});
 		backButton.setOnLongClickListener(new OnLongClickListener()
@@ -149,14 +148,10 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			public void onClick(View v) 
 			{				
-				try 
-				{
-					runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_MENU, 4);
-				}
-				catch (IOException e) 
-				{
-					e.printStackTrace();
-				}					
+				if(myEventHandler==null)
+					myEventHandler = new EventHandler(getApplicationContext());
+				myEventHandler.sendKeys(KeyEvent.KEYCODE_MENU);	
+				vibrate();
 			}
 		});
 		menuButton.setOnLongClickListener(new OnLongClickListener()
@@ -209,14 +204,10 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			public void onClick(View v) 
 			{				
-				try 
-				{
-					runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_HOME, 2);
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}			
+				if(myEventHandler==null)
+					myEventHandler = new EventHandler(getApplicationContext());
+				myEventHandler.sendKeys(KeyEvent.KEYCODE_HOME);		
+				vibrate();
 			}
 		});
 		homeButton.setOnLongClickListener(new OnLongClickListener()
@@ -238,7 +229,9 @@ public class ButtonBar extends StandOutWindow
 						break;					
 						
 					case R.string.a_lock:
-						runCommandAsRoot(app_process_launch + KeyEvent.KEYCODE_POWER, 3);						
+						if(myEventHandler==null)
+							myEventHandler = new EventHandler(getApplicationContext());
+						myEventHandler.sendKeys(KeyEvent.KEYCODE_POWER);						
 						break;					
 					}					
 					return true;
@@ -287,6 +280,40 @@ public class ButtonBar extends StandOutWindow
     		homeButton.setBackground(homeDrawable);
     		dragButton.setBackground(dragDrawable);
         }
+		IntentFilter ifConfigChanged = new IntentFilter();
+		ifConfigChanged.addAction("android.intent.action.CONFIGURATION_CHANGED");
+		BroadcastReceiver brConfigChanged = new BroadcastReceiver()
+		{
+
+			@Override
+			public void onReceive(Context context, Intent intent) 
+			{
+				
+				updateWindowLocation(thisId);
+				FloatingSoftKeysApplication.displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+				int dim1 = FloatingSoftKeysApplication.displayMetrics.heightPixels;
+				int dim2 = FloatingSoftKeysApplication.displayMetrics.widthPixels;
+				if((olddim1<olddim2 && dim1<dim2) || (olddim2<olddim1 && dim2<dim1))
+					return;
+				olddim1 = dim1;
+				olddim2 = dim2;				
+				float curLeft, curTop, newLeft, newTop;
+				curLeft = (float) currentLeft;
+				curTop = (float) currentTop;
+				float ratioNewLeft = curLeft / dim1;
+				float ratioNewTop = curTop / dim2;
+				newLeft = ratioNewLeft * dim2;
+				newTop =  ratioNewTop * dim1;
+				if(currentLeft==-(3*FloatingSoftKeysApplication.getSizeInPix()) + (3*FloatingSoftKeysApplication.getSpacingInPix()))				
+					newLeft = (float) currentLeft;				
+				updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, (int)newLeft, (int)newTop));				
+				keepAtLeastOneButtonVisible();
+				
+				
+			}
+			
+		};
+		registerReceiver(brConfigChanged, ifConfigChanged);
 		
 	}	
 
@@ -377,6 +404,13 @@ public class ButtonBar extends StandOutWindow
 		
 	}
 	
+	@Override
+	public void onMove(int id, Window window, View view, MotionEvent event)
+	{
+		keepAtLeastOneButtonVisible();
+		super.onMove(id, window, view, event);
+	}
+
 	@Override
 	public String getPersistentNotificationMessage(int id) 
 	{
@@ -493,36 +527,38 @@ public class ButtonBar extends StandOutWindow
 		});				
 	}
 	
-	private void runCommandAsRoot(String command, int which) throws IOException
+	private void keepAtLeastOneButtonVisible()
 	{
-		switch(which)
+		updateWindowLocation(thisId);
+		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();
+		if(currentLeft>FloatingSoftKeysApplication.displayMetrics.widthPixels)
 		{
-		case 1:
-			if(backProcess==null)			
-				backProcess = Runtime.getRuntime().exec("su");			
-			dos = new DataOutputStream(backProcess.getOutputStream());
-			break;
-			
-		case 2:
-			if(homeProcess==null)
-				homeProcess = Runtime.getRuntime().exec("su");			
-			dos = new DataOutputStream(homeProcess.getOutputStream());
-			break;
-			
-		case 3:
-			if(powerProcess==null)
-				powerProcess = Runtime.getRuntime().exec("su");			
-			dos = new DataOutputStream(powerProcess.getOutputStream());			
-			break;
-		case 4:
-			if(menuProcess==null)
-				menuProcess = Runtime.getRuntime().exec("su");
-			dos = new DataOutputStream(menuProcess.getOutputStream());			
-			break;
-		}		
-		dos.writeBytes(exportClasspath + "\n");
-		dos.flush();
-		dos.writeBytes(command + "\n");
-		dos.flush();		
+			currentLeft = FloatingSoftKeysApplication.displayMetrics.widthPixels-FloatingSoftKeysApplication.getSizeInPix();
+			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
+		}
+		if(currentLeft < FloatingSoftKeysApplication.getSizeInPix() - windowWidth)
+		{
+			currentLeft = FloatingSoftKeysApplication.getSizeInPix() - windowWidth;
+			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
+		}
+		if(currentTop>FloatingSoftKeysApplication.displayMetrics.heightPixels - windowHeight)
+		{
+			currentTop = FloatingSoftKeysApplication.displayMetrics.heightPixels - windowHeight;
+			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
+		}
+		if(currentTop < FloatingSoftKeysApplication.getSizeInPix() - windowHeight)
+		{
+			currentTop = FloatingSoftKeysApplication.getSizeInPix() - windowHeight;
+			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
+		}
+	}
+	
+	private void vibrate()
+	{
+		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("vibrate", false))
+		{
+			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+			v.vibrate(5);
+		}
 	}
 }

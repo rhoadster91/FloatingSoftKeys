@@ -2,8 +2,11 @@ package com.rhoadster91.floatingsoftkeys;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
+
 import wei.mark.standout.StandOutWindow;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,6 +30,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
 public class MainActivity extends Activity 
@@ -128,6 +133,18 @@ public class MainActivity extends Activity
 			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
 			{
 				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("hidedrag", isChecked).commit();				
+			}
+			
+		});
+		CheckBox checkVibrate = (CheckBox)findViewById(R.id.checkBox6);
+		checkVibrate.setChecked(sharedPref.getBoolean("vibrate", false));
+		checkVibrate.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("vibrate", isChecked).commit();				
 			}
 			
 		});
@@ -307,6 +324,15 @@ public class MainActivity extends Activity
 			}
 			
 		});
+		((Button)findViewById(R.id.button2)).setOnClickListener(new OnClickListener()
+        {
+			@Override
+			public void onClick(View v) 
+			{
+				StandOutWindow.closeAll(context, ButtonBar.class);				
+			}
+        });
+			
         ((Button)findViewById(R.id.buttonReload)).setOnClickListener(new OnClickListener()
         {
 
@@ -356,6 +382,42 @@ public class MainActivity extends Activity
 				}						
 			}        	
         });
+        try 
+		{
+        	int lastVersion = sharedPref.getInt("version", 0);
+            PackageInfo pInfo;    		
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			int curVersion = pInfo.versionCode;
+			String changelogText = new String();
+			Scanner sc = new Scanner(getResources().getAssets().open("changelog.txt"));
+			while(sc.hasNext())
+			{
+				changelogText = changelogText.concat(sc.nextLine());	
+				changelogText = changelogText.concat("\n");
+			}
+	        if(lastVersion<curVersion)
+	        {
+	        	new AlertDialog.Builder(MainActivity.this).setTitle(getString(R.string.changelog)).setMessage(changelogText).setPositiveButton(getString(R.string.cool), new DialogInterface.OnClickListener() 
+	    		{
+	    			public void onClick(DialogInterface dialog, int which) 
+	    			{
+	    				
+	    			}
+	    		})
+	    		.show();
+	        	sharedPref.edit().putInt("version", curVersion).commit();
+	        }
+		}
+		catch (NameNotFoundException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        
     }    
     
     

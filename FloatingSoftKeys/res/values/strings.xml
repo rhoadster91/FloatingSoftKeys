@@ -31,4 +31,8 @@
 	<string name="hide_text">Jelly Bean detected on your phone. If you check this, it will put a transparent notification icon in the tray. But for Jelly Bean users, there is an option to hide notifications from App Info in settings. What would you like to do?</string>
 	<string name="gotoappinfo">Go to App Info</string>
 	<string name="putnothingicon">Use transparent icon</string>
+	<string name="changelog">What\'s New</string>
+	<string name="cool">Cool!</string>
+	<string name="close">Turn off bar</string>
+	<string name="vibrate">Vibrate on button click</string>
 </resources>
