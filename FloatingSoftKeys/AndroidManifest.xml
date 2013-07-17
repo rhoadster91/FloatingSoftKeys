@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rhoadster91.floatingsoftkeys"
-    android:versionCode="9"
-    android:versionName="1.4.1" >
+    android:versionCode="10"
+    android:versionName="2.0.0" >
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />	
 	<uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,6 +13,7 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
     
     
 
@@ -31,14 +32,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".ButtonBar" >
+        <service android:name=".ButtonBar" >             
         </service>
         
         <receiver android:name="OnBootStartKeysReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>
+        </receiver>   
+        
         
     </application>
 
