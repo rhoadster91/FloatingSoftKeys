@@ -49,23 +49,23 @@ public class EventHandler
 			int i = Build.VERSION.SDK_INT;
 			if (i > 15) 
 			{
-				String str2 = str1 + "/input2_jb.jar";
+				String str2 = str1 + "/fskinputjb.jar";
 				localFile = new File(str2);
-				str2 = "input2_jb.jar";
+				str2 = "fskinputjb.jar";
 				localInputStream = localAssetManager.open(str2);
 			}
 			else if (i > 10 && i < 16) 
 			{
-				String str2 = str1 + "/input2_hc.jar";
+				String str2 = str1 + "/fskinputhc.jar";
 				localFile = new File((String) str2);
-				str2 = "input2_hc.jar";
+				str2 = "fskinputhc.jar";
 				localInputStream = localAssetManager.open(str2);
 			}
 			else 
 			{
-				String str2 = str1 + "/input2.jar";
+				String str2 = str1 + "/fskinput.jar";
 				localFile = new File(str2);
-				str2 = "input2.jar";
+				str2 = "fskinput.jar";
 				localInputStream = localAssetManager.open(str2);
 			}
 
@@ -192,17 +192,17 @@ public class EventHandler
 			this.o = this.p.getOutputStream();
 			system("export LD_LIBRARY_PATH=/vendor/lib:/system/lib");
 			if (Build.VERSION.SDK_INT > 15) {
-				String str1 = "export CLASSPATH=" + arg3 + "/input2_jb.jar";
+				String str1 = "export CLASSPATH=" + arg3 + "/fskinputjb.jar";
 				system(str1);
 			} else if ((Build.VERSION.SDK_INT > 10)
 					&& (Build.VERSION.SDK_INT < 16)) {
-				String str3 = "export CLASSPATH=" + arg3 + "/input2_hc.jar";
+				String str3 = "export CLASSPATH=" + arg3 + "/fskinputhc.jar";
 				system(str3);
 			} else {
-				String str4 = "export CLASSPATH=" + arg3 + "/input2.jar";
+				String str4 = "export CLASSPATH=" + arg3 + "/fskinput.jar";
 				system(str4);
 			}
-			String str2 = "exec app_process " + arg3 + " com.smart.swkey.input";
+			String str2 = "exec app_process " + arg3 + " com.rhoadster91.floatingsoftkeys.input";
 			system(str2);
 		}
 
