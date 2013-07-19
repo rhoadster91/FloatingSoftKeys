@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -46,7 +47,7 @@ public class ButtonBar extends StandOutWindow
 	static int windowHeight;
 	static int windowWidth;
 	static EventHandler myEventHandler;
-	static int olddim1, olddim2;
+	static int oldOrientation;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
@@ -71,15 +72,24 @@ public class ButtonBar extends StandOutWindow
 	}
 
 
+	@Override
+	public boolean onTouchBody(int id, Window window, View view, MotionEvent event) 
+	{
+		if (event.getAction() == android.view.MotionEvent.ACTION_UP) 
+		{
+			updateWindowLocation(id);
+		}
+		return super.onTouchBody(id, window, view, event);
+	}
+
 	@SuppressWarnings("deprecation")
 	@Override
 	public void createAndAttachView(int id, FrameLayout frame)
 	{			
 		thisId = id;
 		final int idx = id;		
-		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics(); 
-		olddim1 = FloatingSoftKeysApplication.displayMetrics.heightPixels;
-		olddim2 = FloatingSoftKeysApplication.displayMetrics.heightPixels;
+		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();		 
+		oldOrientation = getResources().getConfiguration().orientation;
 		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.buttons, frame, true);
 		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("horizontal", true))
@@ -97,6 +107,8 @@ public class ButtonBar extends StandOutWindow
 			LinearLayout buttonLayout = (LinearLayout)view.findViewById(R.id.buttonLayout);
 			buttonLayout.setOrientation(LinearLayout.VERTICAL);
 		}
+		currentLeft = (FloatingSoftKeysApplication.displayMetrics.widthPixels - windowWidth) / 2;
+		currentTop = (FloatingSoftKeysApplication.displayMetrics.heightPixels - windowHeight) / 2;
 		View sp1 = (View)view.findViewById(R.id.space1);
 		View sp2 = (View)view.findViewById(R.id.space2);
 		View sp3 = (View)view.findViewById(R.id.space3);LinearLayout.LayoutParams space = new LinearLayout.LayoutParams(
@@ -121,7 +133,7 @@ public class ButtonBar extends StandOutWindow
 
 			@Override
 			public void onClick(View v) 
-			{		
+			{					
 				if(myEventHandler==null)
 					myEventHandler = new EventHandler(getApplicationContext());
 				myEventHandler.sendKeys(KeyEvent.KEYCODE_BACK);
@@ -288,26 +300,25 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			public void onReceive(Context context, Intent intent) 
 			{
-				
-				updateWindowLocation(thisId);
+				Configuration config = getResources().getConfiguration();
+				if(config.orientation==oldOrientation)
+					return;
+				oldOrientation = config.orientation;				
 				FloatingSoftKeysApplication.displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
 				int dim1 = FloatingSoftKeysApplication.displayMetrics.heightPixels;
 				int dim2 = FloatingSoftKeysApplication.displayMetrics.widthPixels;
-				if((olddim1<olddim2 && dim1<dim2) || (olddim2<olddim1 && dim2<dim1))
-					return;
-				olddim1 = dim1;
-				olddim2 = dim2;				
 				float curLeft, curTop, newLeft, newTop;
-				curLeft = (float) currentLeft;
-				curTop = (float) currentTop;
+				curLeft = (float) (currentLeft + (windowWidth/2));
+				curTop = (float) (currentTop + (windowHeight/2));
 				float ratioNewLeft = curLeft / dim1;
 				float ratioNewTop = curTop / dim2;
 				newLeft = ratioNewLeft * dim2;
 				newTop =  ratioNewTop * dim1;
-				if(currentLeft==-(3*FloatingSoftKeysApplication.getSizeInPix()) + (3*FloatingSoftKeysApplication.getSpacingInPix()))				
-					newLeft = (float) currentLeft;				
-				updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, (int)newLeft, (int)newTop));				
-				keepAtLeastOneButtonVisible();
+				newLeft = newLeft - (windowWidth/2);
+				newTop = newTop - (windowHeight/2);
+				currentLeft = (int)newLeft;
+				currentTop = (int)newTop;
+				updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, (int)newLeft, (int)newTop));			
 				
 				
 			}
@@ -396,18 +407,24 @@ public class ButtonBar extends StandOutWindow
 
 	private void updateWindowLocation(int id)
 	{
-		int xy[] = new int[2];
-		Window window = getWindow(id);
-		window.getLocationOnScreen(xy);
-		currentLeft = xy[0];
-		currentTop = xy[1];
-		
-	}
-	
+		try
+		{
+			int xy[] = new int[2];
+			Window window = getWindow(id);
+			window.getLocationOnScreen(xy);		
+			currentLeft = xy[0];			
+			currentTop = xy[1];					
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}		
+	}	
+
 	@Override
-	public void onMove(int id, Window window, View view, MotionEvent event)
-	{
-		keepAtLeastOneButtonVisible();
+	public void onMove(int id, Window window, View view, MotionEvent event) {
+		//updateWindowLocation(id);
 		super.onMove(id, window, view, event);
 	}
 
@@ -450,13 +467,15 @@ public class ButtonBar extends StandOutWindow
 		        else
 		        {
 		        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), StandOutLayoutParams.LEFT - (3 * FloatingSoftKeysApplication.getSizeInPix() + 3 * FloatingSoftKeysApplication.getSpacingInPix()), sy));
+		        	updateWindowLocation(id);		    		
 		        	dragButton.setOnClickListener(new OnClickListener()
 		        	{
 
 						@Override
 						public void onClick(View v) 
 						{
-													
+							updateWindowLocation(id);			
+				        							
 							final long restoreduration = 600;
 							final Handler restorehandler = new Handler();
 							final long restorestart = SystemClock.uptimeMillis();		
@@ -481,7 +500,9 @@ public class ButtonBar extends StandOutWindow
 							        }	
 							        else
 							        {
-							        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), 0, sy));
+							        	updateWindowLocation(id);							        	
+							        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), 0, currentTop - (FloatingSoftKeysApplication.getSizeInPix() / 2)));
+							        								    		
 							        }
 							    }
 							});
@@ -521,13 +542,18 @@ public class ButtonBar extends StandOutWindow
 		        }	
 		        else
 		        {
-		        	updateViewLayout(id, new StandOutLayoutParams(id, windowWidth, windowHeight, 0, sy));		        	
+		        	updateViewLayout(id, new StandOutLayoutParams(id, windowWidth, windowHeight, 0, sy));	
+		        	updateWindowLocation(id);	  		
+		        	
 		        }
 		    }
 		});				
 	}
 	
-	private void keepAtLeastOneButtonVisible()
+	/*
+	 * FUNCTION USELESS FOR NOW, BUT WILL COME IN HANDY IN FUTURE RELEASES
+	 * 
+	 * private void keepAtLeastOneButtonVisible()
 	{
 		updateWindowLocation(thisId);
 		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();
@@ -551,7 +577,7 @@ public class ButtonBar extends StandOutWindow
 			currentTop = FloatingSoftKeysApplication.getSizeInPix() - windowHeight;
 			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
 		}
-	}
+	}*/
 	
 	private void vibrate()
 	{
