@@ -392,8 +392,22 @@ public class MainActivity extends Activity
 			Scanner sc = new Scanner(getResources().getAssets().open("changelog.txt"));
 			while(sc.hasNext())
 			{
-				changelogText = changelogText.concat(sc.nextLine());	
-				changelogText = changelogText.concat("\n");
+				String str = sc.nextLine();
+				if(isInteger(str) && !str.trim().contentEquals(""))
+				{
+					int thisVersionCode = Integer.parseInt(str);
+					if(thisVersionCode <= lastVersion)
+					{
+						sc.close();
+						break;
+					}
+				}
+				if(!isInteger(str))
+				{
+					changelogText = changelogText.concat(str);	
+					changelogText = changelogText.concat("\n");
+				}
+				
 			}
 	        if(lastVersion<curVersion)
 	        {
@@ -456,4 +470,17 @@ public class MainActivity extends Activity
 		intent.setData(uri);
 		startActivity(intent);
 	}
+    
+    private boolean isInteger(String str)
+    {
+    	try
+    	{
+    		Integer.parseInt(str);
+    		return true;
+    	}
+    	catch(NumberFormatException nfe)
+    	{
+    		return false;
+    	}
+    }
 }
