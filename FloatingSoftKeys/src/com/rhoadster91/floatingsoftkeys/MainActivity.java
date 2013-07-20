@@ -41,6 +41,8 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState==null)
+        	FloatingSoftKeysApplication.isOpen = true;
         setContentView(R.layout.activity_main);
         File themeFile = new File(Environment.getExternalStorageDirectory() + "/Floating Soft Keys/");
     	themeFile.mkdirs();
@@ -374,6 +376,7 @@ public class MainActivity extends Activity
 						@Override
 						protected void onPostExecute(Void result) 
 						{
+							FloatingSoftKeysApplication.isOpen = true;							
 							StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);
 							super.onPostExecute(result);
 						}					

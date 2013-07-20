@@ -3,14 +3,12 @@ package com.rhoadster91.floatingsoftkeys;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -35,7 +33,6 @@ import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
 import wei.mark.standout.ui.Window;
 
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class ButtonBar extends StandOutWindow
 {
 	int currentLeft, currentTop;
@@ -48,11 +45,16 @@ public class ButtonBar extends StandOutWindow
 	static int windowWidth;
 	static EventHandler myEventHandler;
 	static int oldOrientation;
+	static IntentFilter ifConfigChanged;
+	static BroadcastReceiver brConfigChanged;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{		
-		return super.onStartCommand(intent, flags, startId);
+		if(FloatingSoftKeysApplication.isOpen)
+			return super.onStartCommand(intent, flags, startId);
+		else
+			return START_NOT_STICKY;
 	}
 	
 	@Override
@@ -292,9 +294,9 @@ public class ButtonBar extends StandOutWindow
     		homeButton.setBackground(homeDrawable);
     		dragButton.setBackground(dragDrawable);
         }
-		IntentFilter ifConfigChanged = new IntentFilter();
+		ifConfigChanged = new IntentFilter();
 		ifConfigChanged.addAction("android.intent.action.CONFIGURATION_CHANGED");
-		BroadcastReceiver brConfigChanged = new BroadcastReceiver()
+		brConfigChanged = new BroadcastReceiver()
 		{
 
 			@Override
@@ -327,6 +329,21 @@ public class ButtonBar extends StandOutWindow
 		registerReceiver(brConfigChanged, ifConfigChanged);
 		
 	}	
+
+	@Override
+	public boolean onClose(int id, Window window) 
+	{
+		try
+		{
+			unregisterReceiver(brConfigChanged);
+			FloatingSoftKeysApplication.isOpen = false;
+		}
+		catch(Exception e)
+		{
+			
+		}		
+		return super.onClose(id, window);
+	}
 
 	@Override
 	public StandOutLayoutParams getParams(int id, Window window) 
@@ -584,7 +601,8 @@ public class ButtonBar extends StandOutWindow
 		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("vibrate", false))
 		{
 			Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-			v.vibrate(5);
+			v.vibrate(20);
 		}
-	}
+	}	
+	
 }

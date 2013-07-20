@@ -1,8 +1,13 @@
+12
+Version 2.0.2
+- Vibration jacked up to 20 milliseconds
+- Fixed bug wherein Reload bar had to be clicked twice to actually reload
+
 11
 Version 2.0.1
-- Vibration bug fix for Xperia phones
 - Better orientation handling (now very predictable movements when you rotate screen)
 - Fixed weird "pull down" effect at edges
+- Fixed force close when orientation changes after keys are disabled
 - Slightly modified input technique 
 - Fixed random crash occurring on some devices
 

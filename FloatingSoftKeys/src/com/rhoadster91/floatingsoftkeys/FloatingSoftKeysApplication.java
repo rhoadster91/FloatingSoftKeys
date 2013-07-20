@@ -28,6 +28,8 @@ public class FloatingSoftKeysApplication extends Application
 	protected static int getPixInDp(int pix)
 	{		
 		return (int) ((pix/displayMetrics.density)+0.5);
-	}	
+	}
+
+	static boolean isOpen = true;	
 	
 }
