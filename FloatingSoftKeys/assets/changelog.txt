@@ -1,17 +1,22 @@
+Version 2.1.0
+- NEW! Added "Ring" feature for app shortcuts on home long press
+- Added volume control
+- Added long-press Power option
 12
+
 Version 2.0.2
 - Vibration jacked up to 20 milliseconds
 - Fixed bug wherein Reload bar had to be clicked twice to actually reload
-
 11
+
 Version 2.0.1
 - Better orientation handling (now very predictable movements when you rotate screen)
 - Fixed weird "pull down" effect at edges
 - Fixed force close when orientation changes after keys are disabled
 - Slightly modified input technique 
 - Fixed random crash occurring on some devices
-
 10
+
 Version 2.0.0
 - Significantly improved responsiveness (reduced lag)
 - Removed unnecessary code

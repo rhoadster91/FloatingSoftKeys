@@ -35,4 +35,13 @@
 	<string name="cool">Cool!</string>
 	<string name="close">Turn off bar</string>
 	<string name="vibrate">Vibrate on button click</string>
+	<string name="app">Application Shortcuts</string>
+	<string name="add">Add</string>
+	<string name="confirm">Confirm</string>
+	<string name="remove">Are you sure you want to remove this?</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="plus">+</string>
+	<string name="minus">-</string>
+	
 </resources>

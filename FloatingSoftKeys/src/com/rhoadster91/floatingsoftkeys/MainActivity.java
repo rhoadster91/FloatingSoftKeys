@@ -30,7 +30,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
@@ -54,7 +56,7 @@ public class MainActivity extends Activity
     	((EditText)findViewById(R.id.editText1)).setText("" + FloatingSoftKeysApplication.size);
     	((EditText)findViewById(R.id.editText2)).setText("" + FloatingSoftKeysApplication.spacing);
     	FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();
-    	final Context context = this;  		
+    	final Context context = this; 
     	TextView tvTip = (TextView)findViewById(R.id.textView6);
     	tvTip.setOnClickListener(new OnClickListener()
     	{
@@ -150,66 +152,15 @@ public class MainActivity extends Activity
 			}
 			
 		});
-		final TextView tvAction = (TextView)findViewById(R.id.textView5);
-		try
-		{
-			tvAction.setText(getString(sharedPref.getInt("action", R.string.a_none)));
-		}
-		catch(Exception e)
-		{
-			tvAction.setText(getString(R.string.a_none));
-			PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putInt("action", R.string.a_none).commit();
-		}
+		processAppList();
 		Button changeAction = (Button)findViewById(R.id.button1);
 		changeAction.setOnClickListener(new OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-		    	builder.setTitle(getString(R.string.a_supported));
-		    	final ArrayList<String>actionList = new ArrayList<String>();
-		    	actionList.add(getString(R.string.a_none));
-		    	actionList.add(getString(R.string.a_gnow));
-		    	actionList.add(getString(R.string.a_lock));
-		    	int x = sharedPref.getInt("action", 0);
-		    	if(x==R.string.a_none)
-		    		x = 0;
-		    	else if(x==R.string.a_gnow)
-		    		x = 1;
-		    	else if(x==R.string.a_lock)
-		    		x = 2;
-		    	else
-		    		x = 0;
-		    	String []list = new String[actionList.size()];
-		    	actionList.toArray(list);
-		    	builder.setSingleChoiceItems(list, x, new DialogInterface.OnClickListener()
-		    	{
-					@Override
-					public void onClick(DialogInterface dialog, int which) 
-					{
-						SharedPreferences.Editor editor = sharedPref.edit();
-						if(actionList.get(which).contentEquals(getString(R.string.a_none)))															
-							editor.putInt("action", R.string.a_none);
-						else if(actionList.get(which).contentEquals(getString(R.string.a_gnow)))															
-							editor.putInt("action", R.string.a_gnow);
-						else if(actionList.get(which).contentEquals(getString(R.string.a_lock)))															
-							editor.putInt("action", R.string.a_lock);
-						editor.commit();
-						tvAction.setText(actionList.get(which));
-						dialog.dismiss();
-					}    		
-		    	});
-		    	builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() 
-		    	{
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) 
-					{							
-						
-					}
-				});
-		    	builder.show();
+				Intent showAppList = new Intent(MainActivity.this, AppListActivity.class);
+				startActivity(showAppList);
 			}			
 		});
 		if(sharedPref.getInt("theme", 0)==0)
@@ -438,7 +389,66 @@ public class MainActivity extends Activity
     }    
     
     
-    private void loadTheme(String themeName)
+    private void processAppList() 
+    {
+    	final TextView tvAction = (TextView)findViewById(R.id.textView5);
+		FloatingSoftKeysApplication.readAppListFromFile(getApplicationContext());
+		ArrayList<String> listOfApps = new ArrayList<String>();
+		for(AppInfo a : FloatingSoftKeysApplication.selectedAppsList)
+		{
+			try 
+			{
+				ApplicationInfo appInfo = getPackageManager().getApplicationInfo(a.packageName, PackageManager.PERMISSION_GRANTED);
+				listOfApps.add(new String(""+getPackageManager().getApplicationLabel(appInfo)));
+			} 
+			catch (NameNotFoundException e) 
+			{
+				FloatingSoftKeysApplication.selectedAppsList.remove(FloatingSoftKeysApplication.selectedAppsList.indexOf(a));			
+				FloatingSoftKeysApplication.writeAppListToFile(getApplicationContext());				
+				e.printStackTrace();				
+			}
+			
+		}
+		String finalText = new String();
+		for(int i=0;i<listOfApps.size();i++)
+		{
+			if(i==listOfApps.size() - 2)
+			{
+				finalText = finalText.concat(listOfApps.get(i) + " and ");				
+			}
+			else if(i==listOfApps.size() - 1)
+			{
+				finalText = finalText.concat(listOfApps.get(i) + ".");
+			}
+			else
+			{
+				finalText = finalText.concat(listOfApps.get(i) + ", ");
+			}
+		}
+		if(finalText.trim().contentEquals(""))
+			tvAction.setText(R.string.a_none);
+		else
+			tvAction.setText(finalText);
+		tvAction.setOnClickListener(new OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v) 
+			{
+				new AlertDialog.Builder(MainActivity.this).setTitle(getString(R.string.home_long_press)).setMessage(tvAction.getText().toString()).setPositiveButton(getString(R.string.cool), new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int which) 
+					{
+						dialog.dismiss();
+					}
+				}).show();
+			}
+			
+		});
+	}
+
+
+	private void loadTheme(String themeName)
     {
     	if(themeName.contentEquals(getString(R.string.default_theme)))
     	{
@@ -486,4 +496,14 @@ public class MainActivity extends Activity
     		return false;
     	}
     }
+
+
+	@Override
+	protected void onResume()
+	{
+		processAppList();
+		super.onResume();
+	}
+    
+    
 }

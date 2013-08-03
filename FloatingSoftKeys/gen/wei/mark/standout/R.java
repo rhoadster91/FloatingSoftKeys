@@ -16,27 +16,27 @@ public final class R {
 		public static final int maximize = 0x7f020009;
 	}
 	public static final class id {
-		public static final int body = 0x7f070024;
-		public static final int close = 0x7f070023;
-		public static final int content = 0x7f07001d;
-		public static final int corner = 0x7f070025;
-		public static final int description = 0x7f07001c;
-		public static final int hide = 0x7f070021;
-		public static final int icon = 0x7f07001b;
-		public static final int maximize = 0x7f070022;
-		public static final int title = 0x7f070020;
-		public static final int titlebar = 0x7f07001e;
-		public static final int window_icon = 0x7f07001f;
+		public static final int body = 0x7f040029;
+		public static final int close = 0x7f040028;
+		public static final int content = 0x7f040022;
+		public static final int corner = 0x7f04002a;
+		public static final int description = 0x7f04001f;
+		public static final int hide = 0x7f040026;
+		public static final int icon = 0x7f04001e;
+		public static final int maximize = 0x7f040027;
+		public static final int title = 0x7f040025;
+		public static final int titlebar = 0x7f040023;
+		public static final int window_icon = 0x7f040024;
 	}
 	public static final class layout {
-		public static final int drop_down_list_item = 0x7f030002;
-		public static final int system_window_decorators = 0x7f030003;
+		public static final int drop_down_list_item = 0x7f030003;
+		public static final int system_window_decorators = 0x7f030005;
 	}
 	public static final class string {
-		public static final int close = 0x7f040002;
-		public static final int corner = 0x7f040003;
-		public static final int hide = 0x7f040001;
-		public static final int maximize = 0x7f040004;
-		public static final int window_icon = 0x7f040000;
+		public static final int close = 0x7f050002;
+		public static final int corner = 0x7f050003;
+		public static final int hide = 0x7f050001;
+		public static final int maximize = 0x7f050004;
+		public static final int window_icon = 0x7f050000;
 	}
 }
