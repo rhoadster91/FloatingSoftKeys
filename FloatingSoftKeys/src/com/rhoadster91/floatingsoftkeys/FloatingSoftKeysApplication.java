@@ -22,8 +22,6 @@ public class FloatingSoftKeysApplication extends Application
 	static Drawable customMenu = null;
 	static Drawable customHome = null;
 	static Drawable customDrag = null;
-	static int centerTop;
-	static int centerLeft;	
 	static boolean showShortcutRequested = false;
 	static boolean showVolumeControlRequested = false;
 	static int shortcutId = -1;

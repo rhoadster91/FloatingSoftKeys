@@ -44,7 +44,10 @@ public class ButtonBar extends StandOutWindow
 {
 	int currentLeft, currentTop;
 	int thisId;
-	static double initX, initY, endX, endY;
+	static int centerX;
+	static int centerY;
+	static int offsetY;
+	static double endX, endY;
 	static Button backButton = null;
 	static Button homeButton = null;
 	static Button menuButton = null;
@@ -55,11 +58,12 @@ public class ButtonBar extends StandOutWindow
 	static int oldOrientation;
 	static IntentFilter ifConfigChanged;
 	static BroadcastReceiver brConfigChanged;
-	static final int THRESHOLD = 100;
+	static int THRESHOLD = 100;
 	static final int OFFSET = 90;
 	static int currentRingItem = -1;
 	static AsyncTask<Void, Void, Void> volumeHideTask;
 	static int remainingTime = 4000;
+	static Toast showSelectedApp = null;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
@@ -134,6 +138,38 @@ public class ButtonBar extends StandOutWindow
 				e.printStackTrace();
 			}
 		}
+		new AsyncTask<Void, Void, Void>()
+		{
+
+			@Override
+			protected Void doInBackground(Void... params) 
+			{
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;			
+			}
+
+			@Override
+			protected void onPostExecute(Void result) 
+			{
+				int xy[] = new int[2];
+				Window window = getWindow(FloatingSoftKeysApplication.shortcutId);
+				window.getLocationOnScreen(xy);
+				offsetY = xy[1];
+				int biggerDim = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
+				double ratio = 1.5;
+				biggerDim *= ratio;
+				int sTop = centerY - (biggerDim/2) - offsetY;
+				updateViewLayout(FloatingSoftKeysApplication.shortcutId, new StandOutLayoutParams(FloatingSoftKeysApplication.shortcutId, biggerDim, biggerDim, xy[0], sTop));
+				super.onPostExecute(result);
+			}
+			
+			
+		}.execute();
 	}
 	
 	public void createVolumeControl(int id, FrameLayout frame)
@@ -208,7 +244,10 @@ public class ButtonBar extends StandOutWindow
 	@Override
 	public void createAndAttachView(int id, FrameLayout frame)
 	{	
-		 
+		int biggerDim = windowHeight>windowWidth?windowHeight:windowWidth;
+		if(id==StandOutWindow.DEFAULT_ID)
+			THRESHOLD =  biggerDim/2;
+		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();		
 		if(FloatingSoftKeysApplication.showShortcutRequested)
 		{
 			createShortcut(id, frame);
@@ -221,7 +260,6 @@ public class ButtonBar extends StandOutWindow
 		}
 		thisId = id;
 		final int idx = id;		
-		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();		 
 		oldOrientation = getResources().getConfiguration().orientation;
 		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.buttons, frame, true);
@@ -364,9 +402,10 @@ public class ButtonBar extends StandOutWindow
 				if(FloatingSoftKeysApplication.shortcutId == -1)
 					FloatingSoftKeysApplication.shortcutId = getUniqueId();				
 				FloatingSoftKeysApplication.showShortcutRequested = true;
+				showSelectedApp = null;
 				updateWindowLocation(thisId);				
-				FloatingSoftKeysApplication.centerLeft = currentLeft + (windowWidth/2);
-				FloatingSoftKeysApplication.centerTop = currentTop + (windowHeight/2);
+				centerX = currentLeft + (windowWidth/2);
+				centerY = currentTop + (windowHeight/2);
 				StandOutWindow.show(ButtonBar.this, ButtonBar.class, FloatingSoftKeysApplication.shortcutId);
 				return true;
 			}			
@@ -386,7 +425,7 @@ public class ButtonBar extends StandOutWindow
 					{
 						close(FloatingSoftKeysApplication.shortcutId);
 						FloatingSoftKeysApplication.showShortcutRequested = false;
-						int newRingItem = getRingItemFromAngle(getAngleInDegrees(initX, initY, endX, endY, OFFSET), getDistance(initX, initY, endX, endY));
+						int newRingItem = getRingItemFromAngle(getAngleInDegrees(centerX, centerY, endX, endY, OFFSET), getDistance(centerX, centerY, endX, endY));
 						if(newRingItem<0)
 						{
 							
@@ -462,15 +501,11 @@ public class ButtonBar extends StandOutWindow
 						}
 					}
 					break;
-				case MotionEvent.ACTION_DOWN:
-					initX = event.getRawX();
-					initY = event.getRawY();
-					break;
 				
 				case MotionEvent.ACTION_MOVE:
 					endX = event.getRawX();
 					endY = event.getRawY();					
-					int newRingItem = getRingItemFromAngle(getAngleInDegrees(initX, initY, endX, endY, OFFSET), getDistance(initX, initY, endX, endY));
+					int newRingItem = getRingItemFromAngle(getAngleInDegrees(centerX, centerY, endX, endY, OFFSET), getDistance(centerX, centerY, endX, endY));
 					if(newRingItem!=currentRingItem && FloatingSoftKeysApplication.showShortcutRequested)
 					{
 						vibrate(20, true);						
@@ -480,7 +515,35 @@ public class ButtonBar extends StandOutWindow
 							Bundle bundle = new Bundle();
 							bundle.putInt("index", newRingItem);
 							sendData(getApplicationContext(), ButtonBar.class, FloatingSoftKeysApplication.shortcutId, 35, bundle, ButtonBar.class, thisId);
-													
+							if(showSelectedApp!=null)
+								showSelectedApp.cancel();
+							String appLabel = new String();
+							switch(newRingItem)
+							{			
+							case -1:
+								break;
+								
+							case 0:
+								appLabel = getString(R.string.a_lock);
+								break;
+							
+							case 1:
+								appLabel = getString(R.string.a_lock_long);
+								break;
+							
+							case 2:
+								appLabel = getString(R.string.a_vol);
+								break;
+							
+							default:
+								appLabel = new String(""+getPackageManager().getApplicationInfo(FloatingSoftKeysApplication.selectedAppsList.get(newRingItem - 3).packageName, PackageManager.PERMISSION_GRANTED).loadLabel(getPackageManager()));
+								break;
+							}
+							if(newRingItem>-1)
+							{
+								showSelectedApp = Toast.makeText(getApplicationContext(), getString(R.string.a_selected) + ": " + appLabel, Toast.LENGTH_SHORT);							
+								showSelectedApp.show();
+							}
 						}
 						catch(Exception e)
 						{
@@ -588,15 +651,14 @@ public class ButtonBar extends StandOutWindow
 
 	@Override
 	public StandOutLayoutParams getParams(int id, Window window) 
-	{
+	{		
 		if(FloatingSoftKeysApplication.showShortcutRequested)
 		{
 			int biggerDim = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
 			double ratio = 1.5;
 			biggerDim *= ratio;
-			int sTop = FloatingSoftKeysApplication.centerTop - (biggerDim/2);
-			int sLeft = FloatingSoftKeysApplication.centerLeft - (biggerDim/2); 			
-			return new StandOutLayoutParams(id, biggerDim, biggerDim, sLeft, sTop);
+			int sLeft = centerX - (biggerDim/2); 			
+			return new StandOutLayoutParams(id, biggerDim, biggerDim, sLeft, StandOutLayoutParams.TOP);
 		}
 		if(FloatingSoftKeysApplication.showVolumeControlRequested)
 		{
@@ -680,13 +742,12 @@ public class ButtonBar extends StandOutWindow
 	private void updateWindowLocation(int id)
 	{
 		try
-		{
+		{			
 			int xy[] = new int[2];
-			Window window = getWindow(id);
+			Window window = getWindow(id);			
 			window.getLocationOnScreen(xy);		
 			currentLeft = xy[0];			
-			currentTop = xy[1] - (FloatingSoftKeysApplication.getSizeInPix()/2);					
-			
+			currentTop = xy[1];
 		}
 		catch(Exception e)
 		{
@@ -722,14 +783,18 @@ public class ButtonBar extends StandOutWindow
 		final int dx = StandOutLayoutParams.LEFT - (3 * FloatingSoftKeysApplication.getSizeInPix() + 3 * FloatingSoftKeysApplication.getSpacingInPix() );
 		final int sx = currentLeft;
 		final int sy = currentTop;
+		offsetY = 0;
 		handler.post(new Runnable() 
 		{
 		    public void run() 
-		    {
+		    {		    	
 		        long elapsed = SystemClock.uptimeMillis() - start;
 		        float t = interpolator.getInterpolation((float) elapsed / duration);
 		        double x = t * dx + (1 - t) * sx;
-		        updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix() , (int) x, sy));
+		        updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix() , (int) x, sy - offsetY));
+		        updateWindowLocation(id);
+		        if(offsetY==0)
+		        	offsetY = currentTop - sy;
 		        createSpringEffect();
 		        if (t < 1.0)
 		        {
@@ -738,16 +803,15 @@ public class ButtonBar extends StandOutWindow
 		        }	
 		        else
 		        {
-		        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), StandOutLayoutParams.LEFT - (3 * FloatingSoftKeysApplication.getSizeInPix() + 3 * FloatingSoftKeysApplication.getSpacingInPix()), sy));
-		        	updateWindowLocation(id);		    		
+		        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), StandOutLayoutParams.LEFT - (3 * FloatingSoftKeysApplication.getSizeInPix() + 3 * FloatingSoftKeysApplication.getSpacingInPix()), sy - offsetY));
+		        	updateWindowLocation(id);
 		        	dragButton.setOnClickListener(new OnClickListener()
 		        	{
 
 						@Override
 						public void onClick(View v) 
 						{
-							updateWindowLocation(id);			
-				        							
+							updateWindowLocation(id);				        							
 							final long restoreduration = 600;
 							final Handler restorehandler = new Handler();
 							final long restorestart = SystemClock.uptimeMillis();		
@@ -755,6 +819,7 @@ public class ButtonBar extends StandOutWindow
 							final int restoresx = StandOutLayoutParams.LEFT - (3 * FloatingSoftKeysApplication.getSizeInPix() + 3 * FloatingSoftKeysApplication.getSpacingInPix() );
 							final int restoredx = 0;
 							final int restoresy = currentTop;
+							offsetY = 0;
 							restorehandler.post(new Runnable() 
 							{
 							    public void run() 
@@ -762,7 +827,10 @@ public class ButtonBar extends StandOutWindow
 							        long elapsed = SystemClock.uptimeMillis() - restorestart;
 							        float t = restoreinterpolator.getInterpolation((float) elapsed / restoreduration);
 							        double x = t * restoredx + (1 - t) * restoresx;
-							        updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix() , (int) x, restoresy));
+							        updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix() , (int) x, restoresy - offsetY));
+							        updateWindowLocation(id);
+							        if(offsetY==0)
+							        	offsetY = currentTop - sy;
 							        createSpringEffect();
 							        if (t < 1.0)
 							        {
@@ -773,7 +841,7 @@ public class ButtonBar extends StandOutWindow
 							        else
 							        {
 							        	updateWindowLocation(id);							        	
-							        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), 0, currentTop));
+							        	updateViewLayout(id, new StandOutLayoutParams(id, 4 * FloatingSoftKeysApplication.getSizeInPix()+ 3 * FloatingSoftKeysApplication.getSpacingInPix(), FloatingSoftKeysApplication.getSizeInPix(), 0, restoresy - offsetY));
 							        								    		
 							        }
 							    }
@@ -937,13 +1005,12 @@ public class ButtonBar extends StandOutWindow
 					e.printStackTrace();
 				}
 			}
-			lila.addView(cl);
-			updateViewLayout(FloatingSoftKeysApplication.shortcutId, getParams(FloatingSoftKeysApplication.shortcutId, window));
-			
+			lila.addView(cl);			
 		}
 		super.onReceiveData(id, requestCode, data, fromCls, fromId);
 	}
 	
+
 	@SuppressWarnings("deprecation")
 	private CircleLayout prepareHardcodedButton(int id, CircleLayout cl, boolean selected)
 	{
@@ -964,5 +1031,6 @@ public class ButtonBar extends StandOutWindow
 		cl.addView(imgView);
 		return cl;
 	}
+	
 	
 }

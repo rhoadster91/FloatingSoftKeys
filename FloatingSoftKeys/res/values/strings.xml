@@ -19,10 +19,11 @@
 	<string name="start_boot">Start at boot</string>
 	<string name="home_long_press">Home long press action</string>
 	<string name="change">Change</string>
-	<string name="a_supported">Supported actions</string>
 	<string name="a_none">(none)</string>
-	<string name="a_gnow">Launch Google Now</string>
+	<string name="a_lock_long">Power button (Long Press)</string>
 	<string name="a_lock">Power button</string>	
+	<string name="a_vol">Volume control</string>
+	<string name="a_selected">Selected</string>	
 	<string name="not_root">Could not acquire root permissions. Please reload the bar and give root permissions.</string>
 	<string name="show_notif">Show persistent notification</string>
 	<string name="horizontal_orientation">Horizontal Orientation</string>

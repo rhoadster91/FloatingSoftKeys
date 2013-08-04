@@ -16,8 +16,8 @@ public final class R {
 		public static final int sliceDivider = 0x7f010001;
 	}
 	public static final class id {
-		public static final int normal = 0x7f040000;
-		public static final int pie = 0x7f040001;
+		public static final int normal = 0x7f050000;
+		public static final int pie = 0x7f050001;
 	}
 	public static final class styleable {
 		public static final int[] CircleLayout = { 0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003, 0x7f010004, 0x7f010005 };
