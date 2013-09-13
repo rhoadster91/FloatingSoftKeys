@@ -10,29 +10,32 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/back" />
-    <View android:id="@+id/space1"
+    <Button android:id="@+id/space1"
         android:padding="0dp" 
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@android:color/transparent"
         />
 <Button
         android:id="@+id/buttonHome"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/home" />
-    <View android:id="@+id/space2"
+    <Button android:id="@+id/space2"
         android:padding="0dp"
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:background="@android:color/transparent" />
 <Button
         android:id="@+id/buttonMenu"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/menu" />
-<View android:id="@+id/space3"
+<Button android:id="@+id/space3"
         android:padding="0dp" 
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:background="@android:color/transparent" />
 <ImageView
     android:id="@+id/imgDrag"
     android:layout_width="32dp"

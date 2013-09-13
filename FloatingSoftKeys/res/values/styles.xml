@@ -16,5 +16,40 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+ <style name="NotificationText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fadingEdge">horizontal</item>
+        <item name="android:singleLine">true</item>
+    </style>
 
+    <!-- Notification bar actions -->
+    <style name="NotificationAction">
+        <item name="android:layout_width">@dimen/notification_action_width</item>
+        <item name="android:layout_height">@dimen/notification_action_height</item>
+        <item name="android:gravity">center|right</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:padding">@dimen/notification_action_padding</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+    </style>
+
+    <style name="NotificationAction.Back" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/backkey</item>
+        
+    </style>
+
+    <style name="NotificationAction.Home" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/homekey</item>
+    </style>
+
+    <style name="NotificationAction.Menu" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/menukey</item>
+       
+    </style>
+
+    <style name="NotificationAction.Close" parent="@style/NotificationAction">
+        <item name="android:src">@android:drawable/ic_menu_close_clear_cancel</item>
+    </style>
+    
 </resources>

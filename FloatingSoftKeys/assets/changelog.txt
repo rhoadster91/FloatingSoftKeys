@@ -1,3 +1,16 @@
+Version 2.2.0
+- NEW! Option to collapse floating navbar to notification shade
+- NEW! Option to set low priority notification (Android 4.1+ only)
+- NEW! For ParanoidAndroid users, ability to control navigation using Halo 2.0
+- Minor bug fixes and optimizations
+14
+
+Version 2.1.1
+- NEW! Added "lock bar position" feature to anchor a bar in particular place. Swipe from back button to drag button to lock the bar. Long press drag button to release the lock.
+- Increased priority of service to cause restarting of service in case of crash due to low memory situations 
+- Fixed issue where theme would revert to default on reboot
+13
+
 Version 2.1.0
 - NEW! Added "Ring" feature for app shortcuts on home long press
 - Added volume control

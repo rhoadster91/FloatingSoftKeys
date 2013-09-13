@@ -44,5 +44,7 @@
 	<string name="no">No</string>
 	<string name="plus">+</string>
 	<string name="minus">-</string>
-	
+	<string name="min_to_notif">Collapse to notification shade on Back long press</string>
+	<string name="min_text">Click to show floating navbar</string>
+	<string name="low_priority_notif">Low priority notification (Android 4.1+ only)</string>
 </resources>

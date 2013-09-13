@@ -4,10 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import ru.biovamp.widget.CircleLayout;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -15,6 +18,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -35,6 +39,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 import wei.mark.standout.StandOutWindow;
 import wei.mark.standout.constants.StandOutFlags;
@@ -47,13 +52,13 @@ public class ButtonBar extends StandOutWindow
 	static int centerX;
 	static int centerY;
 	static int offsetY;
+	static double lockInitX, lockInitY, lockEndX, lockEndY;
 	static double endX, endY;
 	static Button backButton = null;
 	static Button homeButton = null;
 	static Button menuButton = null;
 	static ImageView dragButton = null;
-	static int windowHeight;
-	static int windowWidth;
+	static int windowHeight, windowWidth;
 	static EventHandler myEventHandler;
 	static int oldOrientation;
 	static IntentFilter ifConfigChanged;
@@ -64,6 +69,8 @@ public class ButtonBar extends StandOutWindow
 	static AsyncTask<Void, Void, Void> volumeHideTask;
 	static int remainingTime = 4000;
 	static Toast showSelectedApp = null;
+	static boolean showedLockReleaseNotifAlready = false;
+	static Button sp1, sp2, sp3;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
@@ -71,7 +78,7 @@ public class ButtonBar extends StandOutWindow
 		if(FloatingSoftKeysApplication.isOpen)
 			return super.onStartCommand(intent, flags, startId);
 		else
-			return START_NOT_STICKY;
+			return START_STICKY;
 	}
 	
 	@Override
@@ -245,6 +252,7 @@ public class ButtonBar extends StandOutWindow
 	public void createAndAttachView(int id, FrameLayout frame)
 	{	
 		int biggerDim = windowHeight>windowWidth?windowHeight:windowWidth;
+		final int currentapiVersion = android.os.Build.VERSION.SDK_INT;		
 		if(id==StandOutWindow.DEFAULT_ID)
 			THRESHOLD =  biggerDim/2;
 		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();		
@@ -280,20 +288,18 @@ public class ButtonBar extends StandOutWindow
 		}
 		currentLeft = (FloatingSoftKeysApplication.displayMetrics.widthPixels - windowWidth) / 2;
 		currentTop = (FloatingSoftKeysApplication.displayMetrics.heightPixels - windowHeight) / 2;
-		View sp1 = (View)view.findViewById(R.id.space1);
-		View sp2 = (View)view.findViewById(R.id.space2);
-		View sp3 = (View)view.findViewById(R.id.space3);
-		LinearLayout.LayoutParams space = new LinearLayout.LayoutParams(
-		
-		LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        space.height = FloatingSoftKeysApplication.getSpacingInPix();
-        space.width = FloatingSoftKeysApplication.getSpacingInPix();
+		sp1 = (Button)view.findViewById(R.id.space1);
+		sp2 = (Button)view.findViewById(R.id.space2);
+		sp3 = (Button)view.findViewById(R.id.space3);
+		sp1.setClickable(false);
+		sp2.setClickable(false);
+		sp3.setClickable(false);
+		int height = windowHeight>windowWidth?FloatingSoftKeysApplication.getSpacingInPix():windowHeight;
+		int width = windowHeight>windowWidth?windowWidth:FloatingSoftKeysApplication.getSpacingInPix();
+		LinearLayout.LayoutParams space = new LinearLayout.LayoutParams(width, height);
 		sp1.setLayoutParams(space);
 		sp2.setLayoutParams(space);
 		sp3.setLayoutParams(space);
-		sp1.getParent().requestTransparentRegion(sp1);
-		sp2.getParent().requestTransparentRegion(sp2);
-		sp3.getParent().requestTransparentRegion(sp3);
 		backButton = (Button)view.findViewById(R.id.buttonBack);
 		LinearLayout.LayoutParams rel_btn = new LinearLayout.LayoutParams(
         LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -318,12 +324,125 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			public boolean onLongClick(View v) 
 			{
-				if(windowHeight < windowWidth)
-					collapseToLeft(idx);
+				boolean collapseToNotif = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("notifcollapse", false);
+				if(collapseToNotif)
+				{
+					if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+					{
+						getWindow(thisId).setVisibility(View.GONE);
+					}
+					else
+					{
+						hide(thisId);						
+					}
+				}
 				else
-					stickToLeft(idx);
+				{
+					if(windowHeight < windowWidth)
+						collapseToLeft(idx);
+					else
+						stickToLeft(idx);
+				}
 				return true;
 			}			
+		});		
+		backButton.setOnTouchListener(new OnTouchListener()
+		{
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) 
+			{
+				double distance;
+				boolean correctDirection = false;
+				int biggerDim;
+				switch(event.getAction())
+				{
+				case MotionEvent.ACTION_UP:					
+					lockEndX = event.getRawX();
+					lockEndY = event.getRawY();
+					distance = windowWidth>windowHeight?getDistance(lockInitX, 0, lockEndX, 0):getDistance(0, lockInitY, 0, lockEndY);					
+					biggerDim = windowWidth>windowHeight?windowWidth:windowHeight;
+					if(windowWidth>windowHeight?lockInitX<lockEndX:lockInitY<lockEndY)						
+						correctDirection = true;					
+					if(distance > biggerDim - FloatingSoftKeysApplication.getSizeInPix() && correctDirection)
+					{
+						vibrate(50, true);						
+						Toast.makeText(getApplicationContext(), "Bar locked", Toast.LENGTH_SHORT).show();
+						dragButton.setLongClickable(true);
+						OnClickListener blockClicks = new OnClickListener()
+						{
+
+							@Override
+							public void onClick(View v) 
+							{
+								Toast.makeText(getApplicationContext(), "Clicked", Toast.LENGTH_LONG).show();
+								
+							}
+							
+						};
+						sp1.setClickable(true);
+						sp2.setClickable(true);
+						sp3.setClickable(true);
+						sp1.setOnClickListener(blockClicks);
+						sp2.setOnClickListener(blockClicks);
+						sp3.setOnClickListener(blockClicks);		
+						dragButton.setOnLongClickListener(new OnLongClickListener()
+						{
+
+							@Override
+							public boolean onLongClick(View arg0)
+							{
+								Toast.makeText(getApplicationContext(), "Bar unlocked", Toast.LENGTH_SHORT).show();
+								dragButton.setOnLongClickListener(null);
+								dragButton.setOnClickListener(null);
+								dragButton.setClickable(false);
+								dragButton.setLongClickable(false);
+								sp1.setOnClickListener(null);
+								sp2.setOnClickListener(null);
+								sp3.setOnClickListener(null);
+								sp1.setClickable(false);
+								sp2.setClickable(false);
+								sp3.setClickable(false);
+								return true;
+							}
+							
+						});
+					}					
+					break;
+				
+				case MotionEvent.ACTION_MOVE:
+					lockEndX = event.getRawX();
+					lockEndY = event.getRawY();
+					distance = windowWidth>windowHeight?getDistance(lockInitX, 0, lockEndX, 0):getDistance(0, lockInitY, 0, lockEndY);
+					correctDirection = false;
+					biggerDim = windowWidth>windowHeight?windowWidth:windowHeight;
+					if(windowWidth>windowHeight?lockInitX<lockEndX:lockInitY<lockEndY)						
+						correctDirection = true;					
+					if(distance > biggerDim - FloatingSoftKeysApplication.getSizeInPix() && correctDirection && !showedLockReleaseNotifAlready)
+					{
+						vibrate(20, true);
+						Toast.makeText(getApplicationContext(), "Release now to lock position", Toast.LENGTH_SHORT).show();
+						showedLockReleaseNotifAlready = true;
+					}		
+					else if(distance < biggerDim - FloatingSoftKeysApplication.getSizeInPix() && showedLockReleaseNotifAlready)
+					{
+						vibrate(20, true);
+						showedLockReleaseNotifAlready = false;
+					}
+					break;
+					
+				case MotionEvent.ACTION_DOWN:
+					lockInitX = event.getRawX();
+					lockInitY = event.getRawY();
+					showedLockReleaseNotifAlready = false;
+					break;
+					
+				
+					
+				}				
+				return false;
+			}		
+			
 		});
 		menuButton = (Button)view.findViewById(R.id.buttonMenu);
 		menuButton.setLayoutParams(rel_btn);		
@@ -562,6 +681,7 @@ public class ButtonBar extends StandOutWindow
 		dragButton = (ImageView)view.findViewById(R.id.imgDrag);
 		dragButton.setLayoutParams(rel_btn);
 		dragButton.getParent().requestDisallowInterceptTouchEvent(false);
+		loadTheme(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("theme_name", getString(R.string.default_theme)));		
 		Drawable backDrawable = getResources().getDrawable(R.drawable.back); 
 		Drawable menuDrawable = getResources().getDrawable(R.drawable.menu); 
 		Drawable homeDrawable = getResources().getDrawable(R.drawable.home);		
@@ -580,7 +700,6 @@ public class ButtonBar extends StandOutWindow
 			dragDrawable.setAlpha(255 - ((255 * FloatingSoftKeysApplication.transparency) / 100));
 		else
 			dragDrawable.setAlpha(0);
-		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion < android.os.Build.VERSION_CODES.JELLY_BEAN)
         {
 			
@@ -596,6 +715,48 @@ public class ButtonBar extends StandOutWindow
     		homeButton.setBackground(homeDrawable);
     		dragButton.setBackground(dragDrawable);
         }
+		if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+		{
+			IntentFilter ifNotifPressed = new IntentFilter();
+			BroadcastReceiver brNotifPressed;
+			ifNotifPressed.addAction("FSKNotifIntentBack");
+			ifNotifPressed.addAction("FSKNotifIntentHome");
+			ifNotifPressed.addAction("FSKNotifIntentMenu");
+			ifNotifPressed.addAction("FSKNotifIntentShow");
+			brNotifPressed = new BroadcastReceiver()
+			{
+
+				@Override
+				public void onReceive(Context arg0, Intent arg1) 
+				{
+					if(arg1.getAction().contentEquals("FSKNotifIntentBack"))
+					{
+						if(myEventHandler==null)
+							myEventHandler = new EventHandler(getApplicationContext());
+						myEventHandler.sendKeys(KeyEvent.KEYCODE_BACK);	
+					}
+					else if(arg1.getAction().contentEquals("FSKNotifIntentHome"))
+					{
+						if(myEventHandler==null)
+							myEventHandler = new EventHandler(getApplicationContext());
+						myEventHandler.sendKeys(KeyEvent.KEYCODE_HOME);
+					}
+					else if(arg1.getAction().contentEquals("FSKNotifIntentMenu"))
+					{
+						if(myEventHandler==null)
+							myEventHandler = new EventHandler(getApplicationContext());
+						myEventHandler.sendKeys(KeyEvent.KEYCODE_MENU);
+					}
+					else if(arg1.getAction().contentEquals("FSKNotifIntentShow"))
+					{
+						getWindow(thisId).setVisibility(View.VISIBLE);
+					}
+				}
+				
+			};
+			registerReceiver(brNotifPressed, ifNotifPressed);
+			
+		}
 		ifConfigChanged = new IntentFilter();
 		ifConfigChanged.addAction("android.intent.action.CONFIGURATION_CHANGED");
 		brConfigChanged = new BroadcastReceiver()
@@ -652,6 +813,7 @@ public class ButtonBar extends StandOutWindow
 	@Override
 	public StandOutLayoutParams getParams(int id, Window window) 
 	{		
+		FloatingSoftKeysApplication.displayMetrics = getResources().getDisplayMetrics();
 		if(FloatingSoftKeysApplication.showShortcutRequested)
 		{
 			int biggerDim = (4 * FloatingSoftKeysApplication.getSizeInPix()) + (3 * FloatingSoftKeysApplication.getSpacingInPix());
@@ -685,7 +847,8 @@ public class ButtonBar extends StandOutWindow
 	public int getFlags(int id) 
 	{
 		return super.getFlags(id) | StandOutFlags.FLAG_BODY_MOVE_ENABLE
-				| StandOutFlags.FLAG_WINDOW_FOCUSABLE_DISABLE;
+				| StandOutFlags.FLAG_WINDOW_FOCUSABLE_DISABLE
+				| StandOutFlags.FLAG_WINDOW_HIDE_ENABLE;
 	}
 	
 	private void createSpringEffect()
@@ -888,36 +1051,7 @@ public class ButtonBar extends StandOutWindow
 		        }
 		    }
 		});				
-	}
-	
-	/*
-	 * FUNCTION USELESS FOR NOW, BUT WILL COME IN HANDY IN FUTURE RELEASES
-	 * 
-	 * private void keepAtLeastOneButtonVisible()
-	{
-		updateWindowLocation(thisId);
-		FloatingSoftKeysApplication.displayMetrics = this.getResources().getDisplayMetrics();
-		if(currentLeft>FloatingSoftKeysApplication.displayMetrics.widthPixels)
-		{
-			currentLeft = FloatingSoftKeysApplication.displayMetrics.widthPixels-FloatingSoftKeysApplication.getSizeInPix();
-			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
-		}
-		if(currentLeft < FloatingSoftKeysApplication.getSizeInPix() - windowWidth)
-		{
-			currentLeft = FloatingSoftKeysApplication.getSizeInPix() - windowWidth;
-			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
-		}
-		if(currentTop>FloatingSoftKeysApplication.displayMetrics.heightPixels - windowHeight)
-		{
-			currentTop = FloatingSoftKeysApplication.displayMetrics.heightPixels - windowHeight;
-			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
-		}
-		if(currentTop < FloatingSoftKeysApplication.getSizeInPix() - windowHeight)
-		{
-			currentTop = FloatingSoftKeysApplication.getSizeInPix() - windowHeight;
-			updateViewLayout(thisId, new StandOutLayoutParams(thisId, windowWidth, windowHeight, currentLeft, currentTop));
-		}
-	}*/
+	}	
 	
 	private void vibrate(int time, boolean force)
 	{
@@ -1032,5 +1166,106 @@ public class ButtonBar extends StandOutWindow
 		return cl;
 	}
 	
+	private void loadTheme(String themeName)
+    {
+    	if(themeName.contentEquals(getString(R.string.default_theme)))
+    	{
+    		FloatingSoftKeysApplication.customBack = null;
+    		FloatingSoftKeysApplication.customMenu = null;
+    		FloatingSoftKeysApplication.customHome = null;
+    		FloatingSoftKeysApplication.customDrag = null;    		
+    		return;
+    	}
+    	    	
+    	FloatingSoftKeysApplication.customBack = Drawable.createFromPath(Environment.getExternalStorageDirectory() + "/Floating Soft Keys/" + themeName.concat("/back.png"));
+		FloatingSoftKeysApplication.customMenu = Drawable.createFromPath(Environment.getExternalStorageDirectory() + "/Floating Soft Keys/" + themeName.concat("/menu.png"));
+		FloatingSoftKeysApplication.customHome = Drawable.createFromPath(Environment.getExternalStorageDirectory() + "/Floating Soft Keys/" + themeName.concat("/home.png"));
+		FloatingSoftKeysApplication.customDrag = Drawable.createFromPath(Environment.getExternalStorageDirectory() + "/Floating Soft Keys/" + themeName.concat("/drag.png"));
+		if(FloatingSoftKeysApplication.customBack == null)
+		{
+			Toast.makeText(this, getString(R.string.load_failed), Toast.LENGTH_LONG).show();
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+			SharedPreferences.Editor editor = sharedPref.edit();								
+			editor.putInt("theme", 0);
+			editor.putString("theme_name", getString(R.string.default_theme));							
+			editor.commit();						
+		}		
+    }
+	
+
+	@Override
+	public String getHiddenNotificationMessage(int id) 
+	{
+		// TODO Auto-generated method stub
+		return getString(R.string.min_text);
+	}
+
+	@Override
+	public Intent getHiddenNotificationIntent(int id) {
+		return StandOutWindow.getShowIntent(this, ButtonBar.class, thisId);
+	}
+	
+	@Override
+	public int getHiddenIcon() {
+		return android.R.drawable.ic_menu_info_details;
+	}
+
+	@Override
+	public String getHiddenNotificationTitle(int id) {
+		return getAppName() + " Hidden";
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public Notification getPersistentNotification(int id) 
+	{
+		int icon = getAppIcon();
+		long when = System.currentTimeMillis();
+		Context c = getApplicationContext();
+		String contentTitle = getPersistentNotificationTitle(id);
+		String contentText = getPersistentNotificationMessage(id);
+		String tickerText = String.format("%s: %s", contentTitle, contentText);
+		Intent notificationIntent = getPersistentNotificationIntent(id);
+		PendingIntent contentIntent = null;
+		if (notificationIntent != null) 
+		{
+			contentIntent = PendingIntent.getService(this, 0,
+					notificationIntent,
+					// flag updates existing persistent notification
+					PendingIntent.FLAG_UPDATE_CURRENT);
+		}
+		PendingIntent backIntent = PendingIntent.getBroadcast(this, 0, new Intent("FSKNotifIntentBack"), 0);
+		PendingIntent homeIntent = PendingIntent.getBroadcast(this, 1, new Intent("FSKNotifIntentHome"), 0);
+		PendingIntent menuIntent = PendingIntent.getBroadcast(this, 2, new Intent("FSKNotifIntentMenu"), 0);
+		PendingIntent showIntent = PendingIntent.getBroadcast(this, 3, new Intent("FSKNotifIntentShow"), 0);
+		Notification notification = new Notification(icon, tickerText, when);
+		notification.setLatestEventInfo(c, contentTitle, contentText,
+				contentIntent);
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+		{
+			RemoteViews mNotificationTemplate = new RemoteViews(getPackageName(),
+	                R.layout.notification_template_base);
+			
+			mNotificationTemplate.setTextViewText(R.id.notification_base_line_one, contentTitle);
+			mNotificationTemplate.setTextViewText(R.id.notification_base_line_two, getString(R.string.min_text));
+			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_back, backIntent);
+			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_home, homeIntent);
+			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_menu, menuIntent);
+			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_close, contentIntent);
+	       
+	       Notification.Builder mBuilder= new Notification.Builder(this)
+	                .setSmallIcon(icon)
+	                .setContentIntent(showIntent)
+	                .setPriority(Notification.PRIORITY_DEFAULT)
+	                .setContent(mNotificationTemplate);
+	       if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lpnotif", true))
+	    	   mBuilder.setPriority(Notification.PRIORITY_MIN);
+	       else
+	    	   mBuilder.setPriority(Notification.PRIORITY_MAX);
+			notification = mBuilder.build();
+	    }
+		return notification;		
+	}
 	
 }

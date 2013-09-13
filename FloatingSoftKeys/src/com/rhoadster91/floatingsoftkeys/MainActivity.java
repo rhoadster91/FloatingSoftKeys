@@ -85,6 +85,37 @@ public class MainActivity extends Activity
 			}
 			
 		});
+		final CheckBox checkCollapseToNotif = (CheckBox)findViewById(R.id.checkBox7);		
+		checkCollapseToNotif.setChecked(sharedPref.getBoolean("notifcollapse", false));
+		checkCollapseToNotif.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("notifcollapse", isChecked).commit();				
+			}
+			
+		});
+		final CheckBox checkLowPriorityNotif = (CheckBox)findViewById(R.id.checkBox8);		
+		checkLowPriorityNotif.setChecked(sharedPref.getBoolean("lpnotif", false));
+		if(android.os.Build.VERSION.SDK_INT<android.os.Build.VERSION_CODES.JELLY_BEAN)
+		{
+			checkLowPriorityNotif.setVisibility(View.GONE);
+		}
+		else
+		{
+			checkLowPriorityNotif.setOnCheckedChangeListener(new OnCheckedChangeListener()
+			{
+	
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+				{
+					PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("lpnotif", isChecked).commit();				
+				}
+				
+			});
+		}
 		final CheckBox checkShowNotif = (CheckBox)findViewById(R.id.checkBox4);
 		checkShowNotif.setChecked(sharedPref.getBoolean("shownotif", true));
 		checkShowNotif.setOnCheckedChangeListener(new OnCheckedChangeListener()
