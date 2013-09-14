@@ -723,6 +723,7 @@ public class ButtonBar extends StandOutWindow
 			ifNotifPressed.addAction("FSKNotifIntentHome");
 			ifNotifPressed.addAction("FSKNotifIntentMenu");
 			ifNotifPressed.addAction("FSKNotifIntentShow");
+			ifNotifPressed.addAction("FSKNotifIntentLockLong");
 			brNotifPressed = new BroadcastReceiver()
 			{
 
@@ -750,6 +751,37 @@ public class ButtonBar extends StandOutWindow
 					else if(arg1.getAction().contentEquals("FSKNotifIntentShow"))
 					{
 						getWindow(thisId).setVisibility(View.VISIBLE);
+					}
+					else if(arg1.getAction().contentEquals("FSKNotifIntentLockLong"))
+					{
+						if(myEventHandler==null)
+							myEventHandler = new EventHandler(getApplicationContext());
+						myEventHandler.sendDownTouchKeys(KeyEvent.KEYCODE_POWER);
+						new AsyncTask<Void, Void, Void>()
+						{
+
+							@Override
+							protected Void doInBackground(Void... params)
+							{
+								try 
+								{
+									Thread.sleep(1500);
+								} 
+								catch (InterruptedException e) 
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								return null;
+							}
+
+							@Override
+							protected void onPostExecute(Void result) 
+							{
+								myEventHandler.sendUpTouchKeys(KeyEvent.KEYCODE_POWER);
+								super.onPostExecute(result);
+							}							
+						}.execute();
 					}
 				}
 				
@@ -1238,6 +1270,7 @@ public class ButtonBar extends StandOutWindow
 		PendingIntent homeIntent = PendingIntent.getBroadcast(this, 1, new Intent("FSKNotifIntentHome"), 0);
 		PendingIntent menuIntent = PendingIntent.getBroadcast(this, 2, new Intent("FSKNotifIntentMenu"), 0);
 		PendingIntent showIntent = PendingIntent.getBroadcast(this, 3, new Intent("FSKNotifIntentShow"), 0);
+		PendingIntent lockLongIntent = PendingIntent.getBroadcast(this, 3, new Intent("FSKNotifIntentLockLong"), 0);
 		Notification notification = new Notification(icon, tickerText, when);
 		notification.setLatestEventInfo(c, contentTitle, contentText,
 				contentIntent);
@@ -1253,13 +1286,13 @@ public class ButtonBar extends StandOutWindow
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_home, homeIntent);
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_menu, menuIntent);
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_close, contentIntent);
-	       
+			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_lock_long, lockLongIntent);
 	       Notification.Builder mBuilder= new Notification.Builder(this)
 	                .setSmallIcon(icon)
 	                .setContentIntent(showIntent)
 	                .setPriority(Notification.PRIORITY_DEFAULT)
 	                .setContent(mNotificationTemplate);
-	       if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lpnotif", true))
+	       if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lpnotif", false))
 	    	   mBuilder.setPriority(Notification.PRIORITY_MIN);
 	       else
 	    	   mBuilder.setPriority(Notification.PRIORITY_MAX);

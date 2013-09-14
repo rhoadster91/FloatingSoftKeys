@@ -96,12 +96,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int nothing=0x7f02000e;
         public static final int power_long=0x7f02000f;
         public static final int power_normal=0x7f020010;
-        public static final int volume=0x7f020011;
+        public static final int powerlongkey=0x7f020011;
+        public static final int volume=0x7f020012;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f050029;
+        public static final int LinearLayout1=0x7f05002a;
         public static final int ScrollView1=0x7f050002;
-        public static final int body=0x7f050032;
+        public static final int body=0x7f050033;
         public static final int button1=0x7f050009;
         public static final int button2=0x7f050016;
         public static final int buttonBack=0x7f050019;
@@ -117,26 +118,27 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int checkBox6=0x7f050014;
         public static final int checkBox7=0x7f050010;
         public static final int checkBox8=0x7f050012;
-        public static final int circleLayout1=0x7f05002a;
-        public static final int close=0x7f050031;
-        public static final int content=0x7f05002b;
-        public static final int corner=0x7f050033;
+        public static final int circleLayout1=0x7f05002b;
+        public static final int close=0x7f050032;
+        public static final int content=0x7f05002c;
+        public static final int corner=0x7f050034;
         public static final int description=0x7f050021;
         public static final int editText1=0x7f050004;
         public static final int editText2=0x7f05000b;
-        public static final int hide=0x7f05002f;
+        public static final int hide=0x7f050030;
         public static final int icon=0x7f050020;
-        public static final int imageView1=0x7f050035;
+        public static final int imageView1=0x7f050036;
         public static final int imgDrag=0x7f05001f;
         public static final int listView1=0x7f050017;
-        public static final int maximize=0x7f050030;
+        public static final int maximize=0x7f050031;
         public static final int normal=0x7f050000;
         public static final int notification_base=0x7f050022;
         public static final int notification_base_back=0x7f050025;
-        public static final int notification_base_close=0x7f050028;
+        public static final int notification_base_close=0x7f050029;
         public static final int notification_base_home=0x7f050026;
         public static final int notification_base_line_one=0x7f050023;
         public static final int notification_base_line_two=0x7f050024;
+        public static final int notification_base_lock_long=0x7f050028;
         public static final int notification_base_menu=0x7f050027;
         public static final int pie=0x7f050001;
         public static final int seekBar1=0x7f050006;
@@ -149,10 +151,10 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int textView4=0x7f050007;
         public static final int textView5=0x7f050008;
         public static final int textView6=0x7f05000d;
-        public static final int title=0x7f05002e;
-        public static final int titlebar=0x7f05002c;
-        public static final int vclayout=0x7f050034;
-        public static final int window_icon=0x7f05002d;
+        public static final int title=0x7f05002f;
+        public static final int titlebar=0x7f05002d;
+        public static final int vclayout=0x7f050035;
+        public static final int window_icon=0x7f05002e;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -241,17 +243,20 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
          */
         public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f070001;
         /**  Notification bar actions 
          */
-        public static final int NotificationAction=0x7f070003;
-        public static final int NotificationAction_Back=0x7f070004;
-        public static final int NotificationAction_Close=0x7f070007;
-        public static final int NotificationAction_Home=0x7f070005;
-        public static final int NotificationAction_Menu=0x7f070006;
-        public static final int NotificationText=0x7f070002;
+        public static final int NotificationAction=0x7f070006;
+        public static final int NotificationAction_Back=0x7f070007;
+        public static final int NotificationAction_Close=0x7f07000b;
+        public static final int NotificationAction_Home=0x7f070008;
+        public static final int NotificationAction_LockLong=0x7f07000a;
+        public static final int NotificationAction_Menu=0x7f070009;
+        public static final int NotificationText=0x7f070005;
+        public static final int RobotoButtonStyle=0x7f070003;
+        public static final int RobotoCheckBoxStyle=0x7f070004;
+        public static final int RobotoTextViewStyle=0x7f070002;
     }
     public static final class styleable {
         /** Attributes that can be used with a CircleLayout.

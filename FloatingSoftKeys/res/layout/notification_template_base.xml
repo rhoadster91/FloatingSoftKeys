@@ -42,6 +42,10 @@
     <ImageButton
         android:id="@+id/notification_base_menu"
         style="@style/NotificationAction.Menu" />
+    
+    <ImageButton
+        android:id="@+id/notification_base_lock_long"
+        style="@style/NotificationAction.LockLong" />
 
     <ImageButton
         android:id="@+id/notification_base_close"

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -14,8 +14,24 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+       <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+    <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+    <item name="android:checkboxStyle">@style/RobotoCheckBoxStyle</item>
     </style>
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+    <item name="android:fontFamily">sans-serif-light</item>    
+</style>
+
+<style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
+    <item name="android:fontFamily">sans-serif-light</item>
+</style>
+
+<style name="RobotoCheckBoxStyle" parent="android:Widget.CompoundButton.CheckBox">
+    <item name="android:fontFamily">sans-serif-light</item>
+</style>
+
+
+
  <style name="NotificationText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -45,6 +61,11 @@
 
     <style name="NotificationAction.Menu" parent="@style/NotificationAction">
         <item name="android:src">@drawable/menukey</item>
+       
+    </style>
+    
+    <style name="NotificationAction.LockLong" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/powerlongkey</item>
        
     </style>
 

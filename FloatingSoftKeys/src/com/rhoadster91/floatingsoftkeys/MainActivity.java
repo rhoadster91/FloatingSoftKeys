@@ -43,8 +43,6 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState==null)
-        	FloatingSoftKeysApplication.isOpen = true;
         setContentView(R.layout.activity_main);
         File themeFile = new File(Environment.getExternalStorageDirectory() + "/Floating Soft Keys/");
     	themeFile.mkdirs();
@@ -69,9 +67,12 @@ public class MainActivity extends Activity
 				startActivity(i);
 			}    		
     	});    			
-    	
-		StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);			
-		((TextView)findViewById(R.id.textView2)).setText(getString(R.string.transparency) + ": " + FloatingSoftKeysApplication.transparency);
+    	if(!FloatingSoftKeysApplication.isOpen)
+    	{
+    		FloatingSoftKeysApplication.isOpen = true;
+    		StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);			
+    	}
+    	((TextView)findViewById(R.id.textView2)).setText(getString(R.string.transparency) + ": " + FloatingSoftKeysApplication.transparency);
 		final CheckBox checkCustomIcons = (CheckBox)findViewById(R.id.checkBox1);
 		CheckBox checkOnBootStart = (CheckBox)findViewById(R.id.checkBox2);
 		checkOnBootStart.setChecked(sharedPref.getBoolean("startonboot", false));

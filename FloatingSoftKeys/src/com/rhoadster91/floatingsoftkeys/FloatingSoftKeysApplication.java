@@ -48,7 +48,7 @@ public class FloatingSoftKeysApplication extends Application
 	    return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
 	}
 
-	static boolean isOpen = true;	
+	static boolean isOpen = false;	
 	
 	protected static void writeAppListToFile(Context context) 
 	{
