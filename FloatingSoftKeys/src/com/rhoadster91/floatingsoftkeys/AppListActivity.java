@@ -39,6 +39,7 @@ public class AppListActivity extends ActionBarActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.applist);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		refreshList();		
 	}
 	

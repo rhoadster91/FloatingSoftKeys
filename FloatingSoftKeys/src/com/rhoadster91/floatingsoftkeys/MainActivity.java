@@ -314,7 +314,14 @@ public class MainActivity extends ActionBarActivity
 			@Override
 			public void onClick(View v) 
 			{
-				StandOutWindow.closeAll(context, ButtonBar.class);				
+				try
+				{
+					sendBroadcast(new Intent("FSKNotifIntentClose"));
+				}
+				catch(Exception e)
+				{
+					
+				}
 			}
         });
 			
@@ -337,7 +344,14 @@ public class MainActivity extends ActionBarActivity
 					FloatingSoftKeysApplication.size = Integer.parseInt(no);
 					FloatingSoftKeysApplication.spacing = Integer.parseInt(space);
 					FloatingSoftKeysApplication.transparency = ((SeekBar)findViewById(R.id.seekBar1)).getProgress();
-					StandOutWindow.closeAll(context, ButtonBar.class);
+					try
+					{
+						sendBroadcast(new Intent("FSKNotifIntentClose"));
+					}
+					catch(Exception e)
+					{
+						
+					}
 					new AsyncTask<Void, Void, Void>()
 					{
 

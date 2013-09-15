@@ -63,6 +63,7 @@ public class ButtonBar extends StandOutWindow
 	static int oldOrientation;
 	static IntentFilter ifConfigChanged;
 	static BroadcastReceiver brConfigChanged;
+	static BroadcastReceiver brNotifPressed;	
 	static int THRESHOLD = 100;
 	static final int OFFSET = 90;
 	static int currentRingItem = -1;
@@ -718,7 +719,6 @@ public class ButtonBar extends StandOutWindow
 		if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN)
 		{
 			IntentFilter ifNotifPressed = new IntentFilter();
-			BroadcastReceiver brNotifPressed;
 			ifNotifPressed.addAction("FSKNotifIntentBack");
 			ifNotifPressed.addAction("FSKNotifIntentHome");
 			ifNotifPressed.addAction("FSKNotifIntentMenu");
@@ -838,6 +838,7 @@ public class ButtonBar extends StandOutWindow
 		try
 		{
 			unregisterReceiver(brConfigChanged);
+			unregisterReceiver(brNotifPressed);			
 			FloatingSoftKeysApplication.isOpen = false;
 		}
 		catch(Exception e)

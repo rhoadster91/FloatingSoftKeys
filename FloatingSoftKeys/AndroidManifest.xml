@@ -39,7 +39,11 @@
         </receiver>   
         <activity
             android:label="@string/app"
-            android:name="com.rhoadster91.floatingsoftkeys.AppListActivity" />
+            android:name="com.rhoadster91.floatingsoftkeys.AppListActivity"
+            >
+            <meta-data 	android:name="android.support.PARENT_ACTIVITY"
+        				android:value="com.rhoadster91.floatingsoftkeys.MainActivity" />
+        </activity>
         
         
     </application>
