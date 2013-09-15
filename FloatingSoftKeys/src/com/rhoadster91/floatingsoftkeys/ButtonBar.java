@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import ru.biovamp.widget.CircleLayout;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -716,85 +717,91 @@ public class ButtonBar extends StandOutWindow
     		homeButton.setBackground(homeDrawable);
     		dragButton.setBackground(dragDrawable);
         }
-		if (currentapiVersion >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+		
+		IntentFilter ifNotifPressed = new IntentFilter();
+		ifNotifPressed.addAction("FSKNotifIntentBack");
+		ifNotifPressed.addAction("FSKNotifIntentHome");
+		ifNotifPressed.addAction("FSKNotifIntentMenu");
+		ifNotifPressed.addAction("FSKNotifIntentShow");
+		ifNotifPressed.addAction("FSKNotifIntentLockLong");
+		ifNotifPressed.addAction("FSKNotifIntentClose");
+		brNotifPressed = new BroadcastReceiver()
 		{
-			IntentFilter ifNotifPressed = new IntentFilter();
-			ifNotifPressed.addAction("FSKNotifIntentBack");
-			ifNotifPressed.addAction("FSKNotifIntentHome");
-			ifNotifPressed.addAction("FSKNotifIntentMenu");
-			ifNotifPressed.addAction("FSKNotifIntentShow");
-			ifNotifPressed.addAction("FSKNotifIntentLockLong");
-			ifNotifPressed.addAction("FSKNotifIntentClose");
-			brNotifPressed = new BroadcastReceiver()
+
+			@Override
+			public void onReceive(Context arg0, Intent arg1) 
 			{
-
-				@Override
-				public void onReceive(Context arg0, Intent arg1) 
+				if(arg1.getAction().contentEquals("FSKNotifIntentBack"))
 				{
-					if(arg1.getAction().contentEquals("FSKNotifIntentBack"))
+					if(myEventHandler==null)
+						myEventHandler = new EventHandler(getApplicationContext());
+					myEventHandler.sendKeys(KeyEvent.KEYCODE_BACK);	
+				}
+				else if(arg1.getAction().contentEquals("FSKNotifIntentHome"))
+				{
+					if(myEventHandler==null)
+						myEventHandler = new EventHandler(getApplicationContext());
+					myEventHandler.sendKeys(KeyEvent.KEYCODE_HOME);
+				}
+				else if(arg1.getAction().contentEquals("FSKNotifIntentMenu"))
+				{
+					if(myEventHandler==null)
+						myEventHandler = new EventHandler(getApplicationContext());
+					myEventHandler.sendKeys(KeyEvent.KEYCODE_MENU);
+				}
+				else if(arg1.getAction().contentEquals("FSKNotifIntentShow"))
+				{
+					getWindow(thisId).setVisibility(View.VISIBLE);
+				}
+				else if(arg1.getAction().contentEquals("FSKNotifIntentLockLong"))
+				{
+					if(myEventHandler==null)
+						myEventHandler = new EventHandler(getApplicationContext());
+					myEventHandler.sendDownTouchKeys(KeyEvent.KEYCODE_POWER);
+					new AsyncTask<Void, Void, Void>()
 					{
-						if(myEventHandler==null)
-							myEventHandler = new EventHandler(getApplicationContext());
-						myEventHandler.sendKeys(KeyEvent.KEYCODE_BACK);	
-					}
-					else if(arg1.getAction().contentEquals("FSKNotifIntentHome"))
-					{
-						if(myEventHandler==null)
-							myEventHandler = new EventHandler(getApplicationContext());
-						myEventHandler.sendKeys(KeyEvent.KEYCODE_HOME);
-					}
-					else if(arg1.getAction().contentEquals("FSKNotifIntentMenu"))
-					{
-						if(myEventHandler==null)
-							myEventHandler = new EventHandler(getApplicationContext());
-						myEventHandler.sendKeys(KeyEvent.KEYCODE_MENU);
-					}
-					else if(arg1.getAction().contentEquals("FSKNotifIntentShow"))
-					{
-						getWindow(thisId).setVisibility(View.VISIBLE);
-					}
-					else if(arg1.getAction().contentEquals("FSKNotifIntentLockLong"))
-					{
-						if(myEventHandler==null)
-							myEventHandler = new EventHandler(getApplicationContext());
-						myEventHandler.sendDownTouchKeys(KeyEvent.KEYCODE_POWER);
-						new AsyncTask<Void, Void, Void>()
+
+						@Override
+						protected Void doInBackground(Void... params)
 						{
-
-							@Override
-							protected Void doInBackground(Void... params)
+							try 
 							{
-								try 
-								{
-									Thread.sleep(1500);
-								} 
-								catch (InterruptedException e) 
-								{
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-								return null;
+								Thread.sleep(1500);
+							} 
+							catch (InterruptedException e) 
+							{
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
+							return null;
+						}
 
-							@Override
-							protected void onPostExecute(Void result) 
-							{
-								myEventHandler.sendUpTouchKeys(KeyEvent.KEYCODE_POWER);
-								super.onPostExecute(result);
-							}							
-						}.execute();
+						@Override
+						protected void onPostExecute(Void result) 
+						{
+							myEventHandler.sendUpTouchKeys(KeyEvent.KEYCODE_POWER);
+							super.onPostExecute(result);
+						}							
+					}.execute();
+				}
+				else if(arg1.getAction().contentEquals("FSKNotifIntentClose"))
+				{
+					if(currentapiVersion < android.os.Build.VERSION_CODES.JELLY_BEAN)
+					{
+						if(getWindow(thisId).visibility==Window.VISIBILITY_GONE)
+							StandOutWindow.show(getApplicationContext(), ButtonBar.class, thisId);
+						StandOutWindow.closeAll(ButtonBar.this, ButtonBar.class);
 					}
-					else if(arg1.getAction().contentEquals("FSKNotifIntentClose"))
+					else
 					{
 						getWindow(thisId).setVisibility(View.VISIBLE);
 						StandOutWindow.closeAll(ButtonBar.this, ButtonBar.class);
 					}
 				}
-				
-			};
-			registerReceiver(brNotifPressed, ifNotifPressed);
+			}
 			
-		}
+		};
+		registerReceiver(brNotifPressed, ifNotifPressed);		
 		ifConfigChanged = new IntentFilter();
 		ifConfigChanged.addAction("android.intent.action.CONFIGURATION_CHANGED");
 		brConfigChanged = new BroadcastReceiver()
@@ -840,10 +847,11 @@ public class ButtonBar extends StandOutWindow
 			unregisterReceiver(brConfigChanged);
 			unregisterReceiver(brNotifPressed);			
 			FloatingSoftKeysApplication.isOpen = false;
+			
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 			
 		}		
 		return super.onClose(id, window);
@@ -972,7 +980,7 @@ public class ButtonBar extends StandOutWindow
 	@Override
 	public Intent getPersistentNotificationIntent(int id) 
 	{		
-		return StandOutWindow.getCloseAllIntent(this, ButtonBar.class);
+		return new Intent("FSKNotifIntentClose");
 	}	
 
 	private void collapseToLeft(final int id)
@@ -1268,7 +1276,7 @@ public class ButtonBar extends StandOutWindow
 		PendingIntent contentIntent = null;
 		if (notificationIntent != null) 
 		{
-			contentIntent = PendingIntent.getService(this, 0,
+			contentIntent = PendingIntent.getBroadcast(this, 0,
 					notificationIntent,
 					// flag updates existing persistent notification
 					PendingIntent.FLAG_UPDATE_CURRENT);
