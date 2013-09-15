@@ -8,19 +8,19 @@ package ru.biovamp.widget;
 
 public final class R {
 	public static final class attr {
-		public static final int angleOffset = 0x7f010003;
-		public static final int dividerWidth = 0x7f010005;
-		public static final int innerCircle = 0x7f010002;
-		public static final int innerRadius = 0x7f010000;
-		public static final int layoutMode = 0x7f010004;
-		public static final int sliceDivider = 0x7f010001;
+		public static final int angleOffset = 0x7f01006d;
+		public static final int dividerWidth = 0x7f01006f;
+		public static final int innerCircle = 0x7f01006c;
+		public static final int innerRadius = 0x7f01006a;
+		public static final int layoutMode = 0x7f01006e;
+		public static final int sliceDivider = 0x7f01006b;
 	}
 	public static final class id {
 		public static final int normal = 0x7f050000;
-		public static final int pie = 0x7f050001;
+		public static final int pie = 0x7f050018;
 	}
 	public static final class styleable {
-		public static final int[] CircleLayout = { 0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003, 0x7f010004, 0x7f010005 };
+		public static final int[] CircleLayout = { 0x7f01006a, 0x7f01006b, 0x7f01006c, 0x7f01006d, 0x7f01006e, 0x7f01006f };
 		public static final int CircleLayout_angleOffset = 3;
 		public static final int CircleLayout_dividerWidth = 5;
 		public static final int CircleLayout_innerCircle = 2;

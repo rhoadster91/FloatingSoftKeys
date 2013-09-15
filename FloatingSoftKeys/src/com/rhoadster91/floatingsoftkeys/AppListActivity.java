@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,19 +15,20 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class AppListActivity extends Activity 
+public class AppListActivity extends ActionBarActivity 
 {
 
 	private static List<ResolveInfo> pkgAppsList = null;
@@ -39,36 +39,7 @@ public class AppListActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.applist);
-		refreshList();
-		Button bAdd = (Button)findViewById(R.id.button1);
-		bAdd.setOnClickListener(new OnClickListener()
-		{
-			@Override
-			public void onClick(View v) 
-			{
-				final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-				mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-				if(pkgAppsList==null)
-				{
-					pkgAppsList = getApplicationContext().getPackageManager().queryIntentActivities( mainIntent, PackageManager.PERMISSION_GRANTED);
-					ResolveInfo []tempArray = new ResolveInfo[pkgAppsList.size()];
-					pkgAppsList.toArray(tempArray);
-					Arrays.sort(tempArray, new AppListNameComparator());
-					pkgAppsList = Arrays.asList(tempArray);
-				}
-				ListAdapter adapter = new ArrayAdapterWithIcon(AppListActivity.this, pkgAppsList);				
-				new AlertDialog.Builder(AppListActivity.this).setTitle("Select App")
-                .setAdapter(adapter, new DialogInterface.OnClickListener() 
-                {
-                    public void onClick(DialogInterface dialog, int item ) 
-                    {
-                    	FloatingSoftKeysApplication.selectedAppsList.add(new AppInfo(pkgAppsList.get(item), getPackageManager()));
-                    	FloatingSoftKeysApplication.writeAppListToFile(getApplicationContext());
-                    	refreshList();
-                    }
-            }).show();
-			}			
-		});
+		refreshList();		
 	}
 	
 	@Override
@@ -214,5 +185,45 @@ public class AppListActivity extends Activity
 		});
 		
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{
+		getMenuInflater().inflate(R.menu.applistmenu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		switch(item.getItemId())
+		{
+		case R.id.itemAdd:
+			final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+			mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			if(pkgAppsList==null)
+			{
+				pkgAppsList = getApplicationContext().getPackageManager().queryIntentActivities( mainIntent, PackageManager.PERMISSION_GRANTED);
+				ResolveInfo []tempArray = new ResolveInfo[pkgAppsList.size()];
+				pkgAppsList.toArray(tempArray);
+				Arrays.sort(tempArray, new AppListNameComparator());
+				pkgAppsList = Arrays.asList(tempArray);
+			}
+			ListAdapter adapter = new ArrayAdapterWithIcon(AppListActivity.this, pkgAppsList);				
+			new AlertDialog.Builder(AppListActivity.this).setTitle("Select App")
+            .setAdapter(adapter, new DialogInterface.OnClickListener() 
+            {
+                public void onClick(DialogInterface dialog, int item ) 
+                {
+                	FloatingSoftKeysApplication.selectedAppsList.add(new AppInfo(pkgAppsList.get(item), getPackageManager()));
+                	FloatingSoftKeysApplication.writeAppListToFile(getApplicationContext());
+                	refreshList();
+                }
+            }).show();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+		
 		
 }

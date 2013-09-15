@@ -724,6 +724,7 @@ public class ButtonBar extends StandOutWindow
 			ifNotifPressed.addAction("FSKNotifIntentMenu");
 			ifNotifPressed.addAction("FSKNotifIntentShow");
 			ifNotifPressed.addAction("FSKNotifIntentLockLong");
+			ifNotifPressed.addAction("FSKNotifIntentClose");
 			brNotifPressed = new BroadcastReceiver()
 			{
 
@@ -782,6 +783,11 @@ public class ButtonBar extends StandOutWindow
 								super.onPostExecute(result);
 							}							
 						}.execute();
+					}
+					else if(arg1.getAction().contentEquals("FSKNotifIntentClose"))
+					{
+						getWindow(thisId).setVisibility(View.VISIBLE);
+						StandOutWindow.closeAll(ButtonBar.this, ButtonBar.class);
 					}
 				}
 				
@@ -1270,6 +1276,7 @@ public class ButtonBar extends StandOutWindow
 		PendingIntent homeIntent = PendingIntent.getBroadcast(this, 1, new Intent("FSKNotifIntentHome"), 0);
 		PendingIntent menuIntent = PendingIntent.getBroadcast(this, 2, new Intent("FSKNotifIntentMenu"), 0);
 		PendingIntent showIntent = PendingIntent.getBroadcast(this, 3, new Intent("FSKNotifIntentShow"), 0);
+		PendingIntent closeIntent = PendingIntent.getBroadcast(this, 4, new Intent("FSKNotifIntentClose"), 0);
 		PendingIntent lockLongIntent = PendingIntent.getBroadcast(this, 3, new Intent("FSKNotifIntentLockLong"), 0);
 		Notification notification = new Notification(icon, tickerText, when);
 		notification.setLatestEventInfo(c, contentTitle, contentText,
@@ -1285,7 +1292,7 @@ public class ButtonBar extends StandOutWindow
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_back, backIntent);
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_home, homeIntent);
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_menu, menuIntent);
-			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_close, contentIntent);
+			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_close, closeIntent);
 			mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_lock_long, lockLongIntent);
 	       Notification.Builder mBuilder= new Notification.Builder(this)
 	                .setSmallIcon(icon)

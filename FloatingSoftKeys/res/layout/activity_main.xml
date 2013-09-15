@@ -105,11 +105,9 @@
         android:id="@+id/checkBox1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:text="@string/custom_icon"
-         />
+        android:text="@string/custom_icon" />
 
     <TextView
         android:id="@+id/textView6"
@@ -123,52 +121,56 @@
         android:id="@+id/checkBox3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/horizontal_orientation"
-         />
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/horizontal_orientation" />
 
     <CheckBox
         android:id="@+id/checkBox5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:text="@string/invisible_drag" />
 	
 	<CheckBox
-        android:id="@+id/checkBox7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/min_to_notif" />
+	    android:id="@+id/checkBox7"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:paddingBottom="10dp"
+	    android:paddingTop="10dp"
+	    android:text="@string/min_to_notif" />
 	
     <CheckBox
         android:id="@+id/checkBox4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/show_notif"
-         />
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/show_notif" />
     
     <CheckBox
         android:id="@+id/checkBox8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/low_priority_notif"
-         />
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/low_priority_notif" />
 
     <CheckBox
         android:id="@+id/checkBox2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:text="@string/start_boot" />
 
     <CheckBox
         android:id="@+id/checkBox6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:text="@string/vibrate" />
 
     <LinearLayout
@@ -181,6 +183,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reload_bar" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            />
 
         <Button
             android:id="@+id/button2"

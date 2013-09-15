@@ -2,7 +2,7 @@ Version 2.2.0
 - NEW! Option to collapse floating navbar to notification shade
 - NEW! Option to set low priority notification (Android 4.1+ only)
 - NEW! For ParanoidAndroid users, ability to control navigation using Halo 2.0
-- Changed font to Roboto Light (Android 4.0+)
+- UI overhaul
 - Minor bug fixes and optimizations
 14
 

@@ -4,7 +4,7 @@
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Light">
+    <style name="AppBaseTheme" parent="@style/Theme.Example">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -14,63 +14,13 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-       <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-    <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
-    <item name="android:checkboxStyle">@style/RobotoCheckBoxStyle</item>
-    </style>
-    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
-    <item name="android:fontFamily">sans-serif-light</item>    
-</style>
-
-<style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
-    <item name="android:fontFamily">sans-serif-light</item>
-</style>
-
-<style name="RobotoCheckBoxStyle" parent="android:Widget.CompoundButton.CheckBox">
-    <item name="android:fontFamily">sans-serif-light</item>
-</style>
-
-
-
- <style name="NotificationText">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:fadingEdge">horizontal</item>
-        <item name="android:singleLine">true</item>
-    </style>
-
-    <!-- Notification bar actions -->
-    <style name="NotificationAction">
-        <item name="android:layout_width">@dimen/notification_action_width</item>
-        <item name="android:layout_height">@dimen/notification_action_height</item>
-        <item name="android:gravity">center|right</item>
-        <item name="android:scaleType">fitCenter</item>
-        <item name="android:padding">@dimen/notification_action_padding</item>
-        <item name="android:background">?android:selectableItemBackground</item>
-    </style>
-
-    <style name="NotificationAction.Back" parent="@style/NotificationAction">
-        <item name="android:src">@drawable/backkey</item>
-        
-    </style>
-
-    <style name="NotificationAction.Home" parent="@style/NotificationAction">
-        <item name="android:src">@drawable/homekey</item>
-    </style>
-
-    <style name="NotificationAction.Menu" parent="@style/NotificationAction">
-        <item name="android:src">@drawable/menukey</item>
        
+   
     </style>
     
-    <style name="NotificationAction.LockLong" parent="@style/NotificationAction">
-        <item name="android:src">@drawable/powerlongkey</item>
-       
-    </style>
-
-    <style name="NotificationAction.Close" parent="@style/NotificationAction">
-        <item name="android:src">@android:drawable/ic_menu_close_clear_cancel</item>
-    </style>
+    
+        
+    
+   
     
 </resources>
