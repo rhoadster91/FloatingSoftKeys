@@ -47,4 +47,27 @@
 	<string name="min_to_notif">Collapse to notification shade on Back long press</string>
 	<string name="min_text">Click to show floating navbar</string>
 	<string name="low_priority_notif">Low priority notification (Android 4.1+ only)</string>
+	<string name="help">Help</string>
+	<string name="backbutton">Back button</string>
+	<string name="homebutton">Home button</string>
+	<string name="menubutton">Menu button</string>
+	<string name="dragbutton">Drag button</string>
+	<string name="presshelp">Press Action</string>
+	<string name="longpresshelp">Long-press Action</string>
+	<string name="backbuttonpress">Go back one step</string>
+	<string name="homebuttonpress">Go to home screen</string>
+	<string name="menubuttonpress">Show menu</string>
+	<string name="dragbuttonpress">Move navbar around/unlock when docked to left edge</string>
+	<string name="backbuttonlongpress">Collapse to left edge/notification shade</string>
+	<string name="homebuttonlongpress">Summon "ring" of special actions and app shortcuts</string>
+	<string name="menubuttonlongpress">Show recent apps (Android 3.0+ only)</string>
+	<string name="dragbuttonlongpress">Unlock bar when anchored</string>
+	<string name="aboutfsk">About Floating Soft Keys</string>
+	<string name="about">About</string>
+	<string name="version">Version</string>
+	<string name="by">by RHOADSTER91</string>
+	<string name="tag">Made by me. Tailored for you.</string>
+	<string name="note">This app started off as an experiment but I feel has the potential to be more than just that. I work hard to try to bring to you a flawless, free of cost app without any ads. So if you like my work, please leave a good rating on the Play Store.</string>
+	<string name="sendfeedback">Send feedback</string>
+	<string name="leaverating">Rate on Play Store</string>
 </resources>

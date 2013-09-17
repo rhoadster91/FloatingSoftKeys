@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/itemHelp" 
+        	android:title="@string/help"
+        	app:showAsAction="always" 
+        	android:icon="@drawable/help_dark" />
+    <item android:id="@+id/itemAbout" android:title="@string/aboutfsk" app:showAsAction="ifRoom" android:titleCondensed="@string/about"/><item android:id="@+id/itemChangelog" 
+        	android:title="@string/changelog"
+        	app:showAsAction="never" 
+			/>
+    
+    
+    
+
+</menu>

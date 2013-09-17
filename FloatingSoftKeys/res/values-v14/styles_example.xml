@@ -59,9 +59,9 @@
     <item name="android:fontFamily">sans-serif-light</item>    
 </style>
 
-<style name="RobotoButtonStyle" parent="android:Widget.Holo.Button.Borderless">
+<style name="RobotoButtonStyle" parent="@style/ButtonHoloButtonTheme">
     <item name="android:fontFamily">sans-serif</item>
-    <item name="android:background">#33b5e5</item>
+   
     
 </style>
 

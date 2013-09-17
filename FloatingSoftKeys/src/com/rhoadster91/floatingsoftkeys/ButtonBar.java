@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 
 import ru.biovamp.widget.CircleLayout;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -153,10 +152,12 @@ public class ButtonBar extends StandOutWindow
 			@Override
 			protected Void doInBackground(Void... params) 
 			{
-				try {
+				try 
+				{
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+				} 
+				catch (InterruptedException e) 
+				{
 					e.printStackTrace();
 				}
 				return null;			
@@ -204,7 +205,6 @@ public class ButtonBar extends StandOutWindow
 				}
 				catch (InterruptedException e) 
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return null;
@@ -575,7 +575,6 @@ public class ButtonBar extends StandOutWindow
 									} 
 									catch (InterruptedException e) 
 									{
-										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
 									return null;
@@ -770,7 +769,6 @@ public class ButtonBar extends StandOutWindow
 							} 
 							catch (InterruptedException e) 
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							return null;
@@ -1243,7 +1241,6 @@ public class ButtonBar extends StandOutWindow
 	@Override
 	public String getHiddenNotificationMessage(int id) 
 	{
-		// TODO Auto-generated method stub
 		return getString(R.string.min_text);
 	}
 

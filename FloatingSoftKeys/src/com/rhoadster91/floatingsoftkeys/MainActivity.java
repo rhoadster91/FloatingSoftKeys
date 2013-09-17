@@ -14,13 +14,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -34,6 +39,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
 public class MainActivity extends ActionBarActivity 
@@ -297,14 +304,14 @@ public class MainActivity extends ActionBarActivity
 			}
 
 			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-				
+			public void onStartTrackingTouch(SeekBar seekBar) 
+			{				
 				
 			}
 
 			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
+			public void onStopTrackingTouch(SeekBar seekBar) 
+			{
 				
 			}
 			
@@ -364,7 +371,6 @@ public class MainActivity extends ActionBarActivity
 							}
 							catch (InterruptedException e) 
 							{
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							return null;
@@ -388,7 +394,10 @@ public class MainActivity extends ActionBarActivity
             PackageInfo pInfo;    		
 			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 			int curVersion = pInfo.versionCode;
-			String changelogText = new String();
+			LinearLayout lila = new LinearLayout(MainActivity.this);
+			lila.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			lila.setOrientation(LinearLayout.VERTICAL);
+			lila.setPadding(10, 10, 10, 10);			
 			Scanner sc = new Scanner(getResources().getAssets().open("changelog.txt"));
 			while(sc.hasNext())
 			{
@@ -404,14 +413,24 @@ public class MainActivity extends ActionBarActivity
 				}
 				if(!isInteger(str))
 				{
-					changelogText = changelogText.concat(str);	
-					changelogText = changelogText.concat("\n");
+					TextView tv = new TextView(MainActivity.this);
+					if(str.startsWith("Version"))
+					{
+						tv.setTextColor(Color.parseColor("#33b5e5"));
+						tv.setTypeface(null, Typeface.BOLD);
+					}
+					tv.setText(str);
+					lila.addView(tv);
 				}
 				
 			}
+			ScrollView scv = new ScrollView(MainActivity.this);
+			scv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));				
+			scv.addView(lila);			
+			scv.setBackgroundColor(Color.parseColor("#f3f3f3"));			
 	        if(lastVersion<curVersion)
 	        {
-	        	new AlertDialog.Builder(MainActivity.this).setTitle(getString(R.string.changelog)).setMessage(changelogText).setPositiveButton(getString(R.string.cool), new DialogInterface.OnClickListener() 
+	        	new AlertDialog.Builder(MainActivity.this).setTitle(getString(R.string.changelog)).setView(scv).setPositiveButton(getString(R.string.cool), new DialogInterface.OnClickListener() 
 	    		{
 	    			public void onClick(DialogInterface dialog, int which) 
 	    			{
@@ -424,14 +443,12 @@ public class MainActivity extends ActionBarActivity
 		}
 		catch (NameNotFoundException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} 
+        catch (IOException e)
+		{
 			e.printStackTrace();
-		}
-        
-        
+		}        
     }    
     
     
@@ -551,5 +568,68 @@ public class MainActivity extends ActionBarActivity
 		super.onResume();
 	}   
 	
-    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{
+		getMenuInflater().inflate(R.menu.mainmenu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		switch(item.getItemId())
+		{
+		case R.id.itemHelp:
+			startActivity(new Intent(MainActivity.this, HelpActivity.class));
+			break;
+			
+		case R.id.itemAbout:
+			startActivity(new Intent(MainActivity.this, AboutActivity.class));
+			break;
+		
+		case R.id.itemChangelog:
+			try 
+			{
+				LinearLayout lila = new LinearLayout(MainActivity.this);
+				lila.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+				lila.setOrientation(LinearLayout.VERTICAL);
+				lila.setPadding(10, 10, 10, 10);
+				Scanner sc = new Scanner(getResources().getAssets().open("changelog.txt"));
+				while(sc.hasNext())
+				{
+					String str = sc.nextLine();					
+					if(!isInteger(str))
+					{
+						TextView tv = new TextView(MainActivity.this);
+						if(str.startsWith("Version"))
+						{
+							tv.setTextColor(Color.parseColor("#33b5e5"));
+							tv.setTypeface(null, Typeface.BOLD);
+						}
+						tv.setText(str);
+						lila.addView(tv);
+					}					
+				}		    
+				ScrollView scv = new ScrollView(MainActivity.this);
+				scv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));				
+				scv.addView(lila);				
+				scv.setBackgroundColor(Color.parseColor("#f3f3f3"));
+				new AlertDialog.Builder(MainActivity.this).setTitle(getString(R.string.changelog)).setView(scv).setPositiveButton(getString(R.string.cool), new DialogInterface.OnClickListener() 
+	    		{
+	    			public void onClick(DialogInterface dialog, int which) 
+	    			{
+	    				
+	    			}
+	    		})
+	    		.show();
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 }

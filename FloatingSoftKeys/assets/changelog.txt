@@ -1,3 +1,10 @@
+Version 2.2.1
+- Added "About" screen. Please check it out once :)
+- Fixed broken Start on boot functionality
+- Added "Help" screen
+- Minor UI changes
+15
+
 Version 2.2.0
 - NEW! Option to collapse floating navbar to notification shade
 - NEW! Option to set low priority notification (Android 4.1+ only)

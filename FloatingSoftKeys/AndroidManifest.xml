@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rhoadster91.floatingsoftkeys"
-    android:versionCode="15"
-    android:versionName="2.2.0" >
+    android:versionCode="16"
+    android:versionName="2.2.1" >
 	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />	
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -40,6 +40,20 @@
         <activity
             android:label="@string/app"
             android:name="com.rhoadster91.floatingsoftkeys.AppListActivity"
+            >
+            <meta-data 	android:name="android.support.PARENT_ACTIVITY"
+        				android:value="com.rhoadster91.floatingsoftkeys.MainActivity" />
+        </activity>
+        <activity
+            android:label="@string/help"
+            android:name="com.rhoadster91.floatingsoftkeys.HelpActivity"
+            >
+            <meta-data 	android:name="android.support.PARENT_ACTIVITY"
+        				android:value="com.rhoadster91.floatingsoftkeys.MainActivity" />
+        </activity>
+        <activity
+            android:label="@string/aboutfsk"
+            android:name="com.rhoadster91.floatingsoftkeys.AboutActivity"
             >
             <meta-data 	android:name="android.support.PARENT_ACTIVITY"
         				android:value="com.rhoadster91.floatingsoftkeys.MainActivity" />

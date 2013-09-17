@@ -18,6 +18,7 @@ public class OnBootStartKeysReceiver extends BroadcastReceiver
 		if(PreferenceManager.getDefaultSharedPreferences(arg0).getBoolean("startonboot", false))
 		{
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(arg0);
+				final Context context = arg0;
 				FloatingSoftKeysApplication.size = sharedPref.getInt("size", 32);
 				FloatingSoftKeysApplication.spacing  = sharedPref.getInt("spacing", 0);;
 				FloatingSoftKeysApplication.transparency  = sharedPref.getInt("transparency", 0);
@@ -43,9 +44,17 @@ public class OnBootStartKeysReceiver extends BroadcastReceiver
 						}while(!Environment.MEDIA_MOUNTED.equals(state));
 						return null;
 					}
+
+					@Override
+					protected void onPostExecute(Void result)
+					{
+						FloatingSoftKeysApplication.isOpen = true;
+						StandOutWindow.show(context, ButtonBar.class, StandOutWindow.DEFAULT_ID);
+						super.onPostExecute(result);
+					}
 					
 				}.execute();				
-				StandOutWindow.show(arg0, ButtonBar.class, StandOutWindow.DEFAULT_ID);
+				
 			
 		}
 	}
